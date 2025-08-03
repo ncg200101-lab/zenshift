@@ -1,0 +1,16 @@
+import { toast } from 'react-toastify';
+import { ErrorResponse } from './types';
+
+export const handleActionResponse = <T>(
+    response: { success: boolean; data?: T; error?: ErrorResponse },
+    successMessage: string,
+    errorMessage: string
+): T | string => {
+    if (response.success && response.data) {
+        return response.data;
+    }
+
+    const error = response.error?.message || response.error?.error || errorMessage;
+    toast.error(error, { autoClose: 2000 });
+    return error;
+};
