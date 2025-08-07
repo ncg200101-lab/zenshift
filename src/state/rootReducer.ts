@@ -10,6 +10,9 @@ import productReducer from './product/reducer';
 import healthReducer from './health/reducer';
 import zenaiReducer from './zenai/reducer';
 import usersReducer from './users/reducer';
+import subscriptionReducer from './subscription/reducer';
+import journalReducer from './journal/reducer';
+import ordersReducer from './orders/reducer';
 
 const userPersistConfig = {
     key: 'user-root',
@@ -26,6 +29,9 @@ const rootReducer = combineReducers({
     product: productReducer,
     zenai: zenaiReducer,
     users: usersReducer,
+    subscription: subscriptionReducer,
+    journal: journalReducer,
+    orders: ordersReducer,
 });
 
 export default rootReducer;

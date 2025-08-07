@@ -1,10 +1,10 @@
-import CardDataStats from '../../components/ui/CardDataStats';
-import ChartOne from '../../components/ui/Charts/ChartOne';
-import ChartThree from '../../components/ui/Charts/ChartThree';
-import ChartTwo from '../../components/ui/Charts/ChartTwo';
-import ChatCard from '../../components/ui/Chat/ChatCard';
-import MapOne from '../../components/ui/Maps/MapOne';
-import TableOne from '../../components/ui/Tables/TableOne';
+import CardDataStats from "../../components/ui/CardDataStats";
+import ChartOne from "../../components/ui/Charts/ChartOne";
+import ChartThree from "../../components/ui/Charts/ChartThree";
+import ChartTwo from "../../components/ui/Charts/ChartTwo";
+import ChatCard from "../../components/ui/Chat/ChatCard";
+import MapOne from "../../components/ui/Maps/MapOne";
+import TableOne from "../../components/ui/Tables/TableOne";
 
 const AdminDashboard = () => {
   return (
@@ -101,10 +101,10 @@ const AdminDashboard = () => {
         <ChartTwo />
         <ChartThree />
         <MapOne />
-        <div className="col-span-12 xl:col-span-8">
+        {/* <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
-        <ChatCard />
+        <ChatCard /> */}
       </div>
     </>
   );

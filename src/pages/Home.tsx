@@ -20,7 +20,7 @@ interface ZenshiftCategoryProps {
 const activeZenshiftCategoryLists: ZenshiftCategoryProps[] = [
     {
         title: 'ZenShift Abundance',
-        text: 'Wealth is Frequency TapIn',
+        text: 'Wealth is Frequency Tap In',
         image: '/assets/categories/zen_abundance.jpg',
         link: '/abundance'
     },
@@ -54,7 +54,7 @@ const comingZenshiftCategoryLists: ZenshiftCategoryProps[] = [
         image: '/assets/categories/zen_coming_masters.jpg'
     },
     {
-        title: 'ZenShift Travels',
+        title: 'ZenShift Travel',
         image: '/assets/categories/zen_coming_travels.jpg'
     },
     {
@@ -62,7 +62,7 @@ const comingZenshiftCategoryLists: ZenshiftCategoryProps[] = [
         image: '/assets/categories/zen_coming_academy.jpg'
     },
     {
-        title: 'ZenShift Collectives',
+        title: 'ZenShift Collective',
         image: '/assets/categories/zen_coming_collective.jpg'
     },
     {
@@ -95,7 +95,7 @@ const Home = () => {
                     >
                         <MainTitle>
                             <span className='title-segeo text-black'>you're right on time</span><br />
-                            Zenshift
+                            ZenShift
                         </MainTitle>
                     </motion.div>
                     <div className='chakra-row'>
@@ -108,14 +108,14 @@ const Home = () => {
                         <div className='chakra-circle purple'></div>
                     </div>
                     <Text className='mb-12'>
-                        A multidimensional space where energy meets intelligence—designed to help you live, create, and choose from alignment.
+                        Your portal into the shift from 3D to 5D, where living energy meets intelligent design to guide your next evolution. Step into the next generation of conscious living as ZenShift fuses multidimensional awareness, spiritual embodiment tools, and intelligent automation to help you align, evolve, and live at your highest frequency.
                     </Text>
                     <div className='flex flex-wrap justify-center gap-6 md:gap-20'>
-                        <TransparentButton onClick={handleClick('/store')}>
+                        <TransparentButton onClick={handleClick('/store')} hidden>
                             Enter The Shift
                         </TransparentButton>
                         <FilledButton onClick={handleClick('/zen-ai')}>
-                            Experience ZenAI
+                            Meet the Mirror
                         </FilledButton>
                     </div>
                 </div>
@@ -224,10 +224,28 @@ const Home = () => {
                     transition={{ duration: 0.8 }}
                 >
                     <SubTitle className='mb-12'>
+                        The ZenShift Ascension Phases
+                    </SubTitle>
+                    <Typography className='mb-6 font-medium'>
+                        Our journey unfolds through 8 energetic shifts, each one a step toward coherence, clarity, and embodied living:
+                    </Typography>
+                    <Typography className='mb-6 font-medium'>
+                        Awakening • Pauses • Thresholds • Quiet Seasons • Downloads • Integration • Expansion • Embodiment
+                    </Typography>
+                </motion.div>
+            </div>
+            <div className='w-full h-[3px] bg-[#00f1ff]'></div>
+            <div className='container py-12 md:py-24 text-center'>
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <SubTitle className='mb-12'>
                         Experience The Shift
                     </SubTitle>
                     <Typography className='mb-6 text-left font-medium'>
-                        <span>ZenAI</span> is your personal multidimensional assistant, built on the ZenShift frequencies. Ask questions, explore teachings, or get support—anytime.
+                        <span>ZenAI</span> is your personal multidimensional assistant, built on the ZenShift frequencies and guided by the 8 Ascension Phases. Ask questions, explore teachings, or receive support anytime. Wherever you are on the site, the spinning ZenAI orb is your gateway, click to enter and receive.
                     </Typography>
                 </motion.div>
             </div>

@@ -1,27 +1,22 @@
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { useAppDispatch } from '../state/hooks';
+import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { FullWidthButton } from '../components/ui/Buttons';
 import { Select } from '../components/ui/Select';
 import JournalItem from '../components/ui/JournalItem';
 import { MainTitle, SubTitle, Text } from '../components/ui/Text';
-import { getAllJournalsAction } from '../state/journal/actions';
+import { getAllJournalsAction, getJournalTopicsAction } from '../state/journal/actions';
 import { SortByTypes, JournalTypes } from '../state/journal/types';
 import SpinLoader from '../components/ui/SpinLoader';
 
 const verticalsOptions = [
-    { value: '', label: 'All Verticals' },
+    { value: '', label: 'All' },
     { value: 'Abundance', label: 'Abundance' },
     { value: 'Apothecary', label: 'Apothecary' },
     { value: 'Interior', label: 'Interior' },
     { value: 'Health', label: 'Health' },
-];
-
-const topicsOptions = [
-    { value: 'all-topics', label: 'All Topics' },
-    { value: 'topics-1', label: 'Topics 1' },
-    { value: 'topics-2', label: 'Topics 2' },
-    { value: 'topics-3', label: 'Topics 3' },
+    { value: 'ZenShift', label: 'ZenShift' },
+    { value: 'ZenAI', label: 'ZenAI' },
 ];
 
 const sortByOptions = [
@@ -31,13 +26,20 @@ const sortByOptions = [
 
 const JournalBlog = () => {
     const dispatch = useAppDispatch();
+    const { topics } = useAppSelector((state) => state.journal);
 
-    const [selectedVerticalsValue, setSelectedVerticalsValue] = useState<string>('');
+    const [selectedVerticalsValue, setSelectedVerticalsValue] = useState<string>('ZenShift');
     const [selectedTopicsValue, setSelectedTopicsValue] = useState<string>('all-topics');
     const [selectedSortByValue, setSelectedSortByValue] = useState<string>('newest');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [journals, setJournals] = useState<JournalTypes[]>([]);
     const [email, setEmail] = useState<string>('');
+
+    // Create topics options dynamically from API data
+    const topicsOptions = [
+        { value: 'all-topics', label: 'All Topics' },
+        ...topics.map((topic: string) => ({ value: topic, label: topic }))
+    ];
 
     const handleEmailChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value);
@@ -57,6 +59,11 @@ const JournalBlog = () => {
         }
     }, [isLoading, email]);
 
+    // Fetch topics on component mount
+    useEffect(() => {
+        dispatch(getJournalTopicsAction());
+    }, [dispatch]);
+
     useEffect(() => {
         const fetchAllProducts = async () => {
             setIsLoading(true);
@@ -65,6 +72,7 @@ const JournalBlog = () => {
                     getAllJournalsAction({
                         limit: '18',
                         shift: selectedVerticalsValue ? selectedVerticalsValue : undefined,
+                        topic: selectedTopicsValue !== 'all-topics' ? selectedTopicsValue : undefined,
                         sortBy: selectedSortByValue as SortByTypes
                     })
                 ).unwrap();
@@ -76,7 +84,7 @@ const JournalBlog = () => {
             }
         };
         fetchAllProducts();
-      }, [dispatch, selectedVerticalsValue, selectedSortByValue]);
+      }, [dispatch, selectedVerticalsValue, selectedTopicsValue, selectedSortByValue]);
 
     return (
         <>
@@ -108,7 +116,7 @@ const JournalBlog = () => {
                         options={verticalsOptions}
                         value={selectedVerticalsValue}
                         onChange={setSelectedVerticalsValue}
-                        placeholder='Verticals'
+                        placeholder='All Portals'
                         isShowArrow={true}
                         className='flex items-center justify-between px-6 py-3 border border-black rounded-full bg-[#F9EEDD] text-black text-sm font-medium shadow-sm min-w-[200px]'
                     />
@@ -140,7 +148,7 @@ const JournalBlog = () => {
                                 src={journal.image}
                                 title={journal.title}
                                 vertical={journal.shift}
-                                description={journal.description}
+                                summary={journal.summary}
                             />
                         ))}
                     </div>
@@ -148,9 +156,14 @@ const JournalBlog = () => {
             </div>
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
             <div className='container py-12 md:py-24'>
-                <SubTitle className='mb-8 md:mb-18'>
-                    Get More Shift-Wisdom Delivered to Your Inbox
+                <SubTitle className='mb-4 md:mb-8 text-center'>
+                    Stay in the Field.
                 </SubTitle>
+                <Text className='mb-4 md:mb-8 text-center'>
+                    This is more than a list. It’s a frequency.
+                    <br />
+                    Enter your email to keep receiving resonance.     
+                </Text>
                 <div className='email-form'>
                     <form className='flex flex-col items-center md:flex-row gap-6' onSubmit={handleSubmit}>
                         <div className='w-full'>
@@ -159,7 +172,7 @@ const JournalBlog = () => {
                                 type='email' 
                                 id='email' 
                                 name='email' 
-                                placeholder='Email Address' 
+                                placeholder='Enter your email' 
                                 value={email}
                                 onChange={handleEmailChange}
                                 required
@@ -173,7 +186,7 @@ const JournalBlog = () => {
                             className='w-full'
                         >
                             <FullWidthButton type='submit'>
-                                Get Insight
+                                Keep Me in the Current
                             </FullWidthButton>
                         </motion.div>
                     </form>

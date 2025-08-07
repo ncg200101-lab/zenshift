@@ -9,8 +9,8 @@ import {
     ApiHandler
 } from './types';
 
-// export const BASE_URL = '';
-export const BASE_URL = 'http://localhost:5000';
+export const BASE_URL = '';
+// export const BASE_URL = 'http://localhost:3080';
 
 export const defaultConfig: Partial<ApiConfig> = {
     timeout: 30000,

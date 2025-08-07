@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { verifyEmailAction } from '../state/auth/actions';
-import { useAppDispatch } from '../state/hooks';
-import SpinLoader from '../components/ui/SpinLoader';
+import { verifyEmailAction } from '../../state/auth/actions';
+import { useAppDispatch } from '../../state/hooks';
+import SpinLoader from '../../components/ui/SpinLoader';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();

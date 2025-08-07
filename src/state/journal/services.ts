@@ -19,7 +19,7 @@ export const getJournalByIdService = async (id: string): Promise<ActionResponse<
 };
 
 export const getAllJournalsService = async (
-    queries?: { shift?: string; page?: string; limit?: string; sortBy?: SortByTypes }
+    queries?: { shift?: string; page?: string; limit?: string; sortBy?: SortByTypes; topic?: string }
 ): Promise<ActionResponse<GetJournalsResponse>> => {
     try {
         const response = await apiHandler.makeApiCall<GetJournalsResponse>(
@@ -81,6 +81,18 @@ export const deleteJournalService = async (
         const response = await apiHandler.makeApiCall<{ success: boolean }>(
             `/api/journals/${id}`,
             'DELETE'
+        );
+        return apiHandler.handleActionResponse(response);
+    } catch (error) {
+        return apiHandler.handleActionError(error as ApiError);
+    }
+};
+
+export const getJournalTopicsService = async (): Promise<ActionResponse<{ topics: string[] }>> => {
+    try {
+        const response = await apiHandler.makeApiCall<{ topics: string[] }>(
+            '/api/journals/topics',
+            'GET'
         );
         return apiHandler.handleActionResponse(response);
     } catch (error) {

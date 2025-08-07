@@ -10,6 +10,12 @@ export type SignInSuccessResponse = {
         email: string;
         role: 'user' | 'admin';
         avatar?: string;
+        subscription: {
+            plan?: 'basic' | 'premium' | null;
+            status?: 'active' | 'inactive' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'canceled' | 'unpaid' | 'paused' | null;
+            stripeCustomerId?: string;
+            stripeSubscriptionId?: string;
+        };
     };
     message?: string;
 }
@@ -61,6 +67,12 @@ export type UserTypes = {
     role: 'user' | 'admin';
     avatar: string;
     token: string;
+    subscription: {
+        plan?: 'basic' | 'premium' | null;
+        status?: 'active' | 'inactive' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'canceled' | 'unpaid' | 'paused' | null;
+        stripeCustomerId?: string;
+        stripeSubscriptionId?: string;
+    };
 }
 
 export type UserState = {
@@ -72,4 +84,10 @@ export type UserState = {
     avatar: string;
     token: string;
     error?: string;
+    subscription: {
+        plan?: 'basic' | 'premium' | null;
+        status?: 'active' | 'inactive' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'canceled' | 'unpaid' | 'paused' | null;
+        stripeCustomerId?: string;
+        stripeSubscriptionId?: string;
+    };
 }

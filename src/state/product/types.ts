@@ -19,7 +19,9 @@ export type ShiftTypes =
     | 'Travels'
     | 'Academy'
     | 'Collectives'
-    | 'Golf';
+    | 'Golf'
+    | 'ZenShift'
+    | 'ZenAI';
 
 export type CategoryTypes =
     | 'abundance-field'
@@ -55,9 +57,11 @@ export type ProductTypes = {
     shift: ShiftTypes;
     category: CategoryTypes;
     image: string;
+    bookPath: string;
     price: number;
     rating?: number;
     reviews: ReviewTypes[];
+    printifyData: PrintifyTypes;
     frequencyInfo: {
         color: FrequencyColorTypes;
         size: FrequencySizeTypes;
@@ -70,8 +74,29 @@ export type ProductTypes = {
         shippingFormat?: string;
         returns?: string;
     };
+    isFreebie?: boolean;
+    isPrintify?: boolean;
     createdAt: string;
     updatedAt: string;
+}
+
+export type PrintifyTypes = {
+    variants: VarientType[];
+}
+
+export type VarientType = {
+    cost: number,
+    gram: number,
+    id: number,
+    is_availabe: boolean,
+    is_default: boolean,
+    is_enabled: boolean,
+    is_printify_express_eligible: boolean,
+    options: number[],
+    price: number,
+    quantity: number,
+    sku: string,
+    title: string
 }
 
 export type GetProductsResponse = {
@@ -88,7 +113,7 @@ export type GetReviewsResponse = {
     totalPages: number;
 }
 
-export type SortByTypes = 'alphabetical' | 'price' | 'newest' | 'oldest';
+export type SortByTypes = 'alphabetical' | 'price' | 'priceDesc' | 'newest' | 'oldest';
 
 export type CuratedCategoryTypes = {
     imageSrc: string;

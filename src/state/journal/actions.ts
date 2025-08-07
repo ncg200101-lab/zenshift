@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { getJournalByIdService, getAllJournalsService, createJournalService, updateJournalService, deleteJournalService } from './services';
+import { getJournalByIdService, getAllJournalsService, createJournalService, updateJournalService, deleteJournalService, getJournalTopicsService } from './services';
 import { handleActionResponse } from '../global/actions';
 import {
   JournalTypes,
@@ -38,7 +38,7 @@ export const getJournalByIdAction = createAsyncThunk<
 
 export const getAllJournalsAction = createAsyncThunk<
     GetJournalsResponse,
-    { shift?: string; page?: string; limit?: string; sortBy?: SortByTypes } | undefined,
+    { shift?: string; page?: string; limit?: string; sortBy?: SortByTypes; topic?: string } | undefined,
     { rejectValue: string }
 >(
     'journal/getAllJournals',
@@ -134,6 +134,32 @@ export const deleteJournalAction = createAsyncThunk<
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete journal';
+            toast.error(errorMessage, { autoClose: 2000 });
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const getJournalTopicsAction = createAsyncThunk<
+    { topics: string[] },
+    void,
+    { rejectValue: string }
+>(
+    'journal/getJournalTopics',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getJournalTopicsService();
+            const result = handleActionResponse<{ topics: string[] }>(
+                response,
+                'Get journal topics successfully',
+                'Failed to get journal topics'
+            );
+            if (typeof result === 'string') {
+                return rejectWithValue(result);
+            }
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to get journal topics';
             toast.error(errorMessage, { autoClose: 2000 });
             return rejectWithValue(errorMessage);
         }

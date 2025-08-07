@@ -5,11 +5,13 @@ import {
 import {
     getAllJournalsAction,
     getJournalByIdAction,
+    getJournalTopicsAction,
 } from './actions';
 
 export const initialState: JournalState = {
     isLoading: false,
     error: '',
+    topics: [],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -33,6 +35,18 @@ export default createReducer(initialState, (builder) =>
             state.isLoading = false;
         })
         .addCase(getJournalByIdAction.rejected, (state, { payload }) => {
+            state.isLoading = false;
+            state.error = payload;
+        })
+        .addCase(getJournalTopicsAction.pending, (state) => {
+            state.isLoading = true;
+            state.error = '';
+        })
+        .addCase(getJournalTopicsAction.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            state.topics = payload.topics;
+        })
+        .addCase(getJournalTopicsAction.rejected, (state, { payload }) => {
             state.isLoading = false;
             state.error = payload;
         })

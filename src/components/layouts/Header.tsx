@@ -51,7 +51,7 @@ const Header = () => {
                         <button
                             onClick={handleClick('/about-zenshift')}
                             className='menu-link font-lato'>
-                                About Zenshift
+                                About ZenShift
                         </button>
                         <button
                             onClick={handleClick('/portals')}
@@ -69,7 +69,7 @@ const Header = () => {
                                 The Shift Store
                         </button>
                         <button
-                            onClick={handleClick('/journal')}
+                            onClick={handleClick('/journals')}
                             className='menu-link font-lato'>
                                 Journal
                         </button>
@@ -89,9 +89,7 @@ const Header = () => {
                             className='text-gray-800 focus:outline-none'
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
-                            <svg className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
-                            </svg>
+                            <img src="../../assets/favicon_32x32.png" alt="menu" />
                         </button>
                     </div>
                 </div>
@@ -109,7 +107,7 @@ const Header = () => {
                         onClick={handleClick('/about-zenshift')}
                         className='block w-full text-left px-3 py-2 rounded-md text-base font-medium font-lato text-gray-800 hover:text-[#ffe64d]'
                     >
-                        About Zenshift
+                        About ZenShift
                     </button>
                     <button
                         onClick={handleClick('/portals')}
@@ -130,14 +128,14 @@ const Header = () => {
                         The Shift Store
                     </button>
                     <button
-                        onClick={handleClick('/journal')}
+                        onClick={handleClick('/journals')}
                         className='block w-full text-left px-3 py-2 rounded-md text-base font-medium font-lato text-gray-800 hover:text-[#ffe64d]'
                     >
                         Journal
                     </button>
                     {role === 'admin' && (
                         <button
-                            onClick={handleClick('/journal')}
+                            onClick={handleClick('/admin/dashboard')}
                             className='block w-full text-left px-3 py-2 rounded-md text-base font-medium font-lato text-gray-800 hover:text-[#ffe64d]'
                         >
                             Management

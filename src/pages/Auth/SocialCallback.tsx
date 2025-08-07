@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAppDispatch } from '../state/hooks';
-import { setUserFromSocial } from '../state/auth/actions';
+import { useAppDispatch } from '../../state/hooks';
+import { setUserFromSocial } from '../../state/auth/actions';
 
 const SocialCallback = () => {
     const navigate = useNavigate();
@@ -28,6 +28,12 @@ const SocialCallback = () => {
                     role: user.role,
                     avatar: user.avatar || '',
                     token: token || '',
+                    subscription: {
+                        plan: user.subscription.plan || null,
+                        status: user.subscription.status || null,
+                        stripeCustomerId: user.subscription.stripeCustomerId || undefined,
+                        stripeSubscriptionId: user.subscription.stripeSubscriptionId || undefined,
+                    },
                 }));
 
                 navigate('/');

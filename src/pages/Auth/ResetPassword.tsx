@@ -1,10 +1,11 @@
 import { useState, useCallback, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAppDispatch } from '../state/hooks';
-import ExplosionEffect from '../components/ui/ExplosionEffect';
-import { validatePassword } from '../utils/validation';
-import { useForm } from '../hooks/useForm';
-import { resetPasswordAction } from '../state/auth/actions';
+import { useAppDispatch } from '../../state/hooks';
+import ExplosionEffect from '../../components/ui/ExplosionEffect';
+import { validatePassword } from '../../utils/validation';
+import { useForm } from '../../hooks/useForm';
+import { resetPasswordAction } from '../../state/auth/actions';
+import { motion } from 'framer-motion';
 
 const ResetPassword = () => {
     const dispatch = useAppDispatch();
@@ -68,29 +69,28 @@ const ResetPassword = () => {
 
     return (
         <>
-            <div className='hidden md:block md:w-full md:h-screen md:flex md:flex-row md:bg-[#BBAE8F] sign-desktop-background bg-size-[100%_100%] bg-cover bg-center bg-no-repeat'>
-                <div className='w-1/2'></div>
-                <div className='w-1/2 h-full bg-transparent flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-                    <div className='max-w-md w-full space-y-8'>
+            <div className='hidden md:flex flex-col bg-transparent min-h-screen w-full sign-desktop-background'>
+                <div className='flex flex-grow justify-center items-center p-6'>
+                    <div className='bg-[#ffffff30] rounded-3xl space-y-8 p-10 max-w-lg w-full'>
                         <div>
-                            <h2 className='mt-6 text-center text-[60px] font-playfair font-bold'>
+                            <h2 className='text-center text-white text-[60px] font-playfair font-bold'>
                                 Reset Your Password
                             </h2>
                         </div>
-                        <div className='chakra-row'>
-                            <div className='chakra-circle purple max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle indigo max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle blue max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle green max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle yellow max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle orange max-w-10 max-h-10 min-w-10'></div>
+                        <div className='chakra-row space-x-1'>
                             <div className='chakra-circle red max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle orange max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle yellow max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle green max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle blue max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle indigo max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle purple max-w-10 max-h-10 min-w-10'></div>
                         </div>
-                        <div className='mt-8 space-y-6'>
-                            <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
+                        <div className='mt-8'>
+                            <form className='mt-12 space-y-6' onSubmit={handleSubmit}>
                                 <div className='rounded-md space-y-4 mb-2'>
                                     <div>
-                                        <label htmlFor='desktop-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='desktop-password' className='block text-sm font-medium text-white'>
                                             Password:
                                         </label>
                                         <div className='relative'>
@@ -102,7 +102,7 @@ const ResetPassword = () => {
                                                 value={formState.password as string}
                                                 onChange={handleChange('password')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-white placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -125,7 +125,7 @@ const ResetPassword = () => {
                                     </div>
 
                                     <div>
-                                        <label htmlFor='desktop-repeat-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='desktop-repeat-password' className='block text-sm font-medium text-white'>
                                             Repeat Password:
                                         </label>
                                         <div className='relative'>
@@ -137,7 +137,7 @@ const ResetPassword = () => {
                                                 value={formState.rePassword as string}
                                                 onChange={handleChange('rePassword')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-white placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -161,48 +161,57 @@ const ResetPassword = () => {
                                 </div>
 
                                 <div>
-                                <ExplosionEffect className='w-full'>
-                                    <button
-                                        type='submit'
-                                        disabled={isLoading}
-                                        className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white bg-[#904805] hover:bg-orange-800 focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed'
+                                    <motion.div
+                                        whileHover={{ scale: 1.04 }}
+                                        transition={{ duration: 0.3 }}
+                                        className='w-full'
                                     >
-                                        {isLoading ? (
-                                            <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                                            </svg>
-                                        ) : 'Reset Password'}
-                                    </button>
-                                </ExplosionEffect>
+                                        <ExplosionEffect className='w-full'>
+                                            <button
+                                                type='submit'
+                                                disabled={isLoading}
+                                                className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed bg-gradient-to-r from-[#FFCD29] via-[#FAD859] to-[#FFCD29]'
+                                                style={{
+                                                    boxShadow: '0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3)',
+                                                }}
+                                            >
+                                                {isLoading ? (
+                                                    <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                                                    </svg>
+                                                ) : 'Reset Password'}
+                                            </button>
+                                        </ExplosionEffect>
+                                    </motion.div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className='block md:hidden min-h-screen w-full bg-white bg-[length:100%_auto] sign-mobile-background bg-no-repeat bg-top'>
-                <div className='w-full h-full flex items-center justify-center pt-[400px] pb-20 px-4'>
-                    <div className='w-full max-w-md space-y-6'>
+            <div className='flex flex-col md:hidden min-h-screen w-full bg-white sign-mobile-background'>
+                <div className='flex flex-grow justify-center items-center p-6'>
+                    <div className='w-full max-w-md space-y-6 max-w-lg w-full'>
                         <div>
                             <h2 className='text-center text-[30px] md:text-[60px] font-playfair font-bold'>
                                 Reset Your Password
                             </h2>
                         </div>
-                        <div className='chakra-row flex justify-center gap-2'>
-                            <div className='chakra-circle purple w-8 h-8'></div>
-                            <div className='chakra-circle indigo w-8 h-8'></div>
-                            <div className='chakra-circle blue w-8 h-8'></div>
-                            <div className='chakra-circle green w-8 h-8'></div>
-                            <div className='chakra-circle yellow w-8 h-8'></div>
-                            <div className='chakra-circle orange w-8 h-8'></div>
+                        <div className='chakra-row space-x-1'>
                             <div className='chakra-circle red w-8 h-8'></div>
+                            <div className='chakra-circle orange w-8 h-8'></div>
+                            <div className='chakra-circle yellow w-8 h-8'></div>
+                            <div className='chakra-circle green w-8 h-8'></div>
+                            <div className='chakra-circle blue w-8 h-8'></div>
+                            <div className='chakra-circle indigo w-8 h-8'></div>
+                            <div className='chakra-circle purple w-8 h-8'></div>
                         </div>
                         <div className='space-y-4'>
                             <form className='space-y-4' onSubmit={handleSubmit}>
                                 <div className='space-y-4'>
                                     <div>
-                                        <label htmlFor='mobile-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='mobile-password' className='block text-sm font-medium text-[#000]'>
                                             Password:
                                         </label>
                                         <div className='relative'>
@@ -214,7 +223,7 @@ const ResetPassword = () => {
                                                 value={formState.password as string}
                                                 onChange={handleChange('password')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -237,7 +246,7 @@ const ResetPassword = () => {
                                     </div>
 
                                     <div>
-                                        <label htmlFor='mobile-repeat-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='mobile-repeat-password' className='block text-sm font-medium text-[#000]'>
                                             Repeat Password:
                                         </label>
                                         <div className='relative'>
@@ -249,7 +258,7 @@ const ResetPassword = () => {
                                                 value={formState.password as string}
                                                 onChange={handleChange('rePassword')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -273,18 +282,29 @@ const ResetPassword = () => {
                                 </div>
 
                                 <div>
-                                    <button
-                                        type='submit'
-                                        disabled={isLoading}
-                                        className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white bg-[#904805] hover:bg-orange-800 focus:outline-none transition duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed'
+                                    <motion.div
+                                        whileHover={{ scale: 1.03 }}
+                                        transition={{ duration: 0.3 }}
+                                        className='w-full'
                                     >
-                                        {isLoading ? (
-                                            <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                                            </svg>
-                                        ) : 'Sign Up'}
-                                    </button>
+                                        <ExplosionEffect className='w-full'>
+                                            <button
+                                                type='submit'
+                                                disabled={isLoading}
+                                                className='w-full flex justify-center py-2 px-4 rounded-lg border border-transparent text-base font-medium text-white focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed bg-gradient-to-r from-[#FFCD29] via-[#FAD859] to-[#FFCD29]'
+                                                style={{
+                                                    boxShadow: '0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3)',
+                                                }}
+                                            >
+                                                {isLoading ? (
+                                                    <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                                                    </svg>
+                                                ) : 'Reset Password'}
+                                            </button>
+                                        </ExplosionEffect>
+                                    </motion.div>
                                 </div>
                             </form>
                         </div>

@@ -1,5 +1,5 @@
 import apiHandler from '../global/api';
-import { ApiError, ActionResponse } from '../global/types';
+import { ApiError, ActionResponse, BlogPostTypes } from '../global/types';
 import {
     ProductTypes,
     SortByTypes,
@@ -39,6 +39,7 @@ export const getAllProductsService = async (
         page?: string;
         limit?: string;
         sortBy?: SortByTypes;
+        includePrintify?: string;
     }
 ): Promise<ActionResponse<GetProductsResponse>> => {
     try {
@@ -115,6 +116,20 @@ export const deleteProductService = async (
         const response = await apiHandler.makeApiCall<{ id: string }>(
             `/api/products/${id}`,
             'DELETE'
+        );
+        return apiHandler.handleActionResponse(response);
+    } catch (error) {
+        return apiHandler.handleActionError(error as ApiError);
+    }
+};
+
+export const getBlogByIdService = async (
+    id: string
+): Promise<ActionResponse<BlogPostTypes>> => {
+    try {
+        const response = await apiHandler.makeApiCall<BlogPostTypes>(
+            `/api/blogposts/${id}`,
+            'GET'
         );
         return apiHandler.handleActionResponse(response);
     } catch (error) {

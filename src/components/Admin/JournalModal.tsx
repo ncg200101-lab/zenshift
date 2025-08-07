@@ -2,6 +2,8 @@ import React, { useRef } from 'react';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { ShiftSelect } from '../ui/Select/ShiftSelect';
+import TopicsInput from '../ui/TopicsInput';
+import RichTextEditor from '../ui/RichTextEditor';
 import { FormData } from '../../pages/Admin/JournalManagement';
 
 interface JournalModalProps {
@@ -12,6 +14,7 @@ interface JournalModalProps {
     handleChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => void;
+    handleRichTextChange: (field: string, value: string) => void;
     handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent) => void;
     modalTitle: string;
@@ -27,9 +30,9 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     maxHeight: 'calc(100vh - 40px)',
-    overflow: 'hidden',
+    overflow: 'auto',
     width: '100%',
-    maxWidth: 'min(400px, calc(100vw - 32px))',
+    maxWidth: 'min(800px, calc(100vw - 32px))',
     borderRadius: '16px'
 };
 
@@ -39,6 +42,7 @@ const JournalModal: React.FC<JournalModalProps> = ({
     isLoading,
     onClose,
     handleChange,
+    handleRichTextChange,
     handleFileChange,
     handleSubmit,
     modalTitle,
@@ -62,6 +66,7 @@ const JournalModal: React.FC<JournalModalProps> = ({
             aria-labelledby="child-modal-title"
             aria-describedby="child-modal-description"
             sx={{ zIndex: 10000 }}
+            style={{ overflow: 'auto' }}
         >
             <Box sx={{ ...style }}>
                 <div className="bg-white rounded-2xl shadow-2xl p-8 w-full relative animate-slide-up">
@@ -79,13 +84,24 @@ const JournalModal: React.FC<JournalModalProps> = ({
                             />
                         </div>
                         <div className="col-span-2">
-                            <label className="block mb-1 font-medium">Description</label>
+                            <label className="block mb-1 font-medium">Summary</label>
                             <textarea
-                                name="description"
-                                value={form.description}
+                                name="summary"
+                                value={form.summary}
                                 onChange={handleChange}
                                 className="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-green-300"
                                 required
+                                rows={3}
+                                placeholder="Enter a brief summary of the journal entry..."
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block mb-1 font-medium">Description</label>
+                            <RichTextEditor
+                                value={form.description}
+                                onChange={(value) => handleRichTextChange('description', value)}
+                                placeholder="Write your journal content here..."
+                                className="w-full"
                             />
                         </div>
                         <div className='col-span-2'>
@@ -93,6 +109,14 @@ const JournalModal: React.FC<JournalModalProps> = ({
                             <ShiftSelect 
                                 selectedValue={form.shift}
                                 onChange={shift => handleSelectChange('shift', shift)}
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block mb-1 font-medium">Topics</label>
+                            <TopicsInput
+                                topics={form.topics}
+                                onChange={(topics) => handleSelectChange('topics', JSON.stringify(topics))}
+                                placeholder="Enter topics (e.g., Mindfulness, Meditation, Wellness)"
                             />
                         </div>
                         <div className='col-span-2'>
@@ -129,7 +153,7 @@ const JournalModal: React.FC<JournalModalProps> = ({
                             </button>
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded font-semibold hover:from-green-600 hover:to-blue-600"
+                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-whitwe rounded font-semibold hover:from-green-600 hover:to-blue-600"
                                 disabled={isLoading}
                             >
                                 {isLoading ? 'Saving...' : submitLabel}

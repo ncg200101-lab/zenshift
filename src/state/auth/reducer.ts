@@ -17,6 +17,12 @@ export const initialState: UserState = {
     avatar: '',
     token: '',
     error: '',
+    subscription: {
+        plan: undefined,
+        status: undefined,
+        stripeCustomerId: undefined,
+        stripeSubscriptionId: undefined,
+    },
 };
 
 export default createReducer(initialState, (builder) =>
@@ -33,6 +39,7 @@ export default createReducer(initialState, (builder) =>
             state.role = payload.role;
             state.avatar = payload.avatar;
             localStorage.setItem('token', payload.token || '');
+            state.subscription = payload.subscription;
             state.token = payload.token;
         })
         .addCase(signInAction.rejected, (state, { payload }) => {
@@ -44,7 +51,7 @@ export default createReducer(initialState, (builder) =>
             state.avatar = '';
             state.token = '';
             localStorage.removeItem('token');
-            state.error = payload || 'Login failed';
+            state.error = payload as string || 'Login failed';
         })
         .addCase(signUpAction.pending, (state) => {
             state.isLoading = true;

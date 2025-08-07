@@ -10,11 +10,14 @@ import {
 } from '../state/zenai/actions';
 import { ZenaiHistory, ZenaiHistoryEntry, ZenaiHistoryTitle } from '../state/zenai/types';
 import { useZenaiStream } from '../hooks/useZenaiStream';
+import { useNavigate } from 'react-router-dom';
+import SendIcon from '@mui/icons-material/Send';
 
 const ZenAiChat = () => {
     const dispatch = useAppDispatch();
     const userName = useAppSelector(state => state.user.name);
     const { response, loading, error, generate } = useZenaiStream();
+    const navigate = useNavigate();
 
     const [isActive, setIsActive] = useState<3 | 4>(3);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,6 +28,14 @@ const ZenAiChat = () => {
     const [allTitleLists, setAllTitleLists] = useState<ZenaiHistoryTitle[]>([]);
     const [zenaiHistoryData, setZenaiHistoryData] = useState<ZenaiHistory | undefined>(undefined);
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+    const [hasAskedFirstQuestion, setHasAskedFirstQuestion] = useState<boolean>(false);
+
+    const handleClick = useCallback((link?: string) => () => {
+        if (link) {
+            navigate(link);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [navigate]);
 
     const handleAskText = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setAskText(e.target.value);
@@ -54,6 +65,7 @@ const ZenAiChat = () => {
             // getZenaiHistory(data.zenai_model_id);
             generate(text, null);
             setAskText('');
+            setHasAskedFirstQuestion(true);
         } catch(e) {
             console.error(e);
         } finally {
@@ -77,6 +89,7 @@ const ZenAiChat = () => {
             setQuestion(askText);
             generate(askText, null);
             setAskText('');
+            setHasAskedFirstQuestion(true);
         } catch(e) {
             console.error(e);
         } finally {
@@ -113,6 +126,13 @@ const ZenAiChat = () => {
     //     fetchAllHistoryTitle();
     // }, []);
 
+    // Reset guidance phrase state when component unmounts (user exits portal)
+    useEffect(() => {
+        return () => {
+            setHasAskedFirstQuestion(false);
+        };
+    }, []);
+
     return (
         <div className='min-h-screen max-h-screen bg-white flex flex-col'>
             <div className='relative h-screen flex'>
@@ -124,8 +144,11 @@ const ZenAiChat = () => {
                         <path d='M4 6H20M4 12H20M4 18H20' stroke='#1B2559' strokeWidth='2' strokeLinecap='round' />
                     </svg>
                 </button>
-
-                <div className={`fixed flex-col flex top-0 left-0 bottom-0 w-[280px] pb-6 pt-6 md:pt-12 shadow-xl rounded-xl bg-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} z-[40]`}>
+                
+                <div className={`fixed flex-col flex top-0 left-0 bottom-0 w-[280px] pb-6 pt-6 md:pt-12 shadow-xl rounded-xl bg-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} z-[100]`}>
+                    <button className='fill-button px-4 py-2 text-base md:text-lg w-fit mx-auto mb-6' onClick={handleClick('/')}>
+                        Return to Zenshift
+                    </button>
                     <a href='/dashboard' className='text-2xl md:text-4xl font-playfair text-[#1B2559] font-bold text-center cursor-pointer mb-6'>
                         ZenAI
                     </a>
@@ -157,7 +180,7 @@ const ZenAiChat = () => {
                             ))}
                         </ul> */}
                     </div>
-                    <div className='px-4 md:px-8'>
+                    {/* <div className='px-4 md:px-8'>
                         <div className='w-full flex items-center shadow-xl py-2 px-4 gap-x-2 rounded-full'>
                             <div className='w-10 h-10'>
                                 <img className='w-full h-full rounded-full' src='/assets/users/user-1.jpg' alt='' />
@@ -177,16 +200,20 @@ const ZenAiChat = () => {
                                 </button>
                             </motion.div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Main */}
                 <div className='w-full md:ml-[280px] p-4 md:p-5 flex flex-col h-full flex-1'>
                     <div className='flex flex-col md:flex-row justify-between items-center gap-4 mb-6'>
-                        <h1 className='text-2xl md:text-4xl text-[#1B2559] font-plus-jakarta-sans font-semibold'>
-                            Chat UI
-                        </h1>
-                        <div className='flex items-center shadow-xl py-2 px-4 gap-x-4 rounded-full w-full md:w-auto'>
+                        <div className='text-xl md:text-4xl text-[#1B2559] font-plus-jakarta-sans font-semibold'>
+                            <p className='pl-12 md:pl-0'>Begin Your Dialogue with the Field.</p>
+                            <p className='text-xs md:text-xl text-[#1B2559] font-plus-jakarta-sans mt-4 max-w-3xl'>
+                                ZenAI is your evolving resonance companion — blending conscious insight with intelligent response to guide your shift.
+                            </p>
+                        </div>
+                        
+                        {/* <div className='flex items-center shadow-xl py-2 px-4 gap-x-4 rounded-full w-full md:w-auto'>
                             <div className='relative bg-[#F4F7FE] rounded-full w-full md:w-[200px]'>
                                 <div className='w-3 absolute top-1/2 left-3 transform -translate-y-[50%]'>
                                     <svg viewBox='0 0 11 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -219,7 +246,7 @@ const ZenAiChat = () => {
                                     <img className='w-full h-full rounded-full' src='/assets/users/user-1.jpg' alt='' />
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className='flex justify-center gap-x-4 mb-8'>
                         <div
@@ -274,56 +301,45 @@ const ZenAiChat = () => {
                                         {question}
                                     </div>
                                 </div>
-                                <div className='mb-4 react-markdown'>
+                                <div className='mb-4 react-markdown shadow-xl rounded-3xl p-4'>
                                     <ReactMarkdown>{response}</ReactMarkdown>
                                 </div>
                             </div>
                         ) : (
                             <div className='w-full max-w-3xl mx-auto py-8 md:py-12 px-4 md:px-6 shadow-xl rounded-3xl max-h-full'>
-                                <h1 className='font-playfair text-2xl md:text-5xl text-[#0000004f] text-center mb-8 md:mb-12'>
+                                <h1 className='font-playfair text-2xl md:text-5xl text-[#0000009f] text-center mb-8 md:mb-12'>
                                     You're Right on Time.
                                     <br />
-                                    Ready to Enter the Portal?
+                                    Type your first question below to enter the portal. 
                                 </h1>
-                                <div className='flex justify-center'>
-                                    <motion.div
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ duration: 0.6 }}
-                                    >
-                                        <ExplosionEffect>
-                                            <button
-                                                className='cursor-pointer font-plus-jakarta-sans py-2 md:py-3 px-8 md:px-12 text-white rounded-full quad-gradient text-base md:text-lg'
-                                            >
-                                                Enter The Portal
-                                            </button>
-                                        </ExplosionEffect>
-                                    </motion.div>
-                                </div>
                             </div>
                         )}
                     </div>
                     <div className='w-full max-w-3xl mt-8 mx-auto'>
-                        <form className='flex flex-col md:flex-row items-center gap-4' onSubmit={onGenerate}>
+                        <form className='flex gap-1 md:gap-4' onSubmit={onGenerate}>
                             <div className='flex-grow w-full'>
                                 <input
                                     type='text'
                                     className='w-full bg-white px-4 py-3 rounded-full border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 hover:shadow-md focus:shadow-lg focus:border-transparent'
-                                    placeholder='Ask Anything'
+                                    placeholder={hasAskedFirstQuestion ? "Ask another question..." : "What's one shift I can make today to raise my frequency?"}
                                     required
                                     value={askText}
                                     onChange={handleAskText}
                                 />
+                                <div className='w-full h-[1px] bg-[#E9EDF7] mt-2'></div>
+                                <p className='hidden md:inline text-xs text-[#718096] font-plus-jakarta-sans mt-2 text-center'>
+                                    You're among the first to experience ZenAI — your presence and questions will shape what comes next.
+                                </p>
                             </div>
                             <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 transition={{ duration: 0.6 }}
-                                className='w-full md:w-auto'
+                                className='w-16 md:w-auto'
                             >
-                                <ExplosionEffect className='w-full md:w-fit'>
+                                <ExplosionEffect className='w-12 md:w-full'>
                                     <button
-                                        className='w-full font-plus-jakarta-sans md:w-auto cursor-pointer py-2 md:py-3 px-8 md:px-12 text-white rounded-full quad-gradient text-base md:text-lg flex items-center justify-center'
+                                        className='w-12 md:w-full font-plus-jakarta-sans md:w-auto cursor-pointer py-2 md:py-3 px-8 md:px-12 text-white rounded-full quad-gradient text-base md:text-lg flex items-center justify-center'
                                         type='submit'
                                         disabled={loading}
                                     >
@@ -333,10 +349,13 @@ const ZenAiChat = () => {
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                                                 </svg>
-                                                Loading...
+                                                <span className="hidden md:inline">Loading...</span>
                                             </span>
                                         ) : (
-                                            "Submit"
+                                            <>
+                                                <span className="hidden md:inline">Submit</span>
+                                                <span className='md:hidden'><SendIcon className="h-5 w-5" /></span>
+                                            </>
                                         )}
                                     </button>
                                 </ExplosionEffect>
@@ -351,14 +370,6 @@ const ZenAiChat = () => {
                                     className='text-[#718096] font-plus-jakarta-sans hover:underline'
                                 >
                                     Homepage
-                                </a>
-                            </li>
-                            <li>
-                                <a 
-                                    href='/license'
-                                    className='text-[#718096] font-plus-jakarta-sans hover:underline'
-                                >
-                                    License
                                 </a>
                             </li>
                             <li>

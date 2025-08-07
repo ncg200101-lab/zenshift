@@ -15,6 +15,7 @@ const CuratedCard = ({ imageSrc, title, category, tooltip }: FindSectionCardProp
     const [showTooltip, setShowTooltip] = useState<boolean>(false);
 
     const handleClick = useCallback(() => {
+        // Special case: apparel-accessories should go to /printify
         navigate(`/store/${category}`);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [navigate, category]);

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LargeFilledButton, FilledButton } from '../components/ui/Buttons';
-import { MainTitle, SubTitle, Text } from '../components/ui/Text';          
+import { MainTitle, SubTitle, Text } from '../components/ui/Text';
 import ExplosionEffect from '../components/ui/ExplosionEffect';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -20,7 +20,7 @@ interface ZenshiftCategoryProps {
 const activeZenshiftCategoryLists: ZenshiftCategoryProps[] = [
     {
         title: 'ZenShift Abundance',
-        text: 'Wealth is Frequency TapIn',
+        text: 'Wealth is Frequency Tap In',
         image: '/assets/categories/zen_abundance.jpg',
         link: '/abundance'
     },
@@ -54,7 +54,7 @@ const comingZenshiftCategoryLists: ZenshiftCategoryProps[] = [
         image: '/assets/categories/zen_coming_masters.jpg'
     },
     {
-        title: 'ZenShift Travels',
+        title: 'ZenShift Travel',
         image: '/assets/categories/zen_coming_travels.jpg'
     },
     {
@@ -62,7 +62,7 @@ const comingZenshiftCategoryLists: ZenshiftCategoryProps[] = [
         image: '/assets/categories/zen_coming_academy.jpg'
     },
     {
-        title: 'ZenShift Collectives',
+        title: 'ZenShift Collective',
         image: '/assets/categories/zen_coming_collective.jpg'
     },
     {
@@ -99,24 +99,24 @@ const ExploreVerticals = () => {
                     className='mb-8 md:mb-16'
                 >
                     <MainTitle>
-                        Where do you feel the<br/><span>Shift?</span>
+                        Where do you feel the<br /><span>Shift?</span>
                     </MainTitle>
                 </motion.div>
-                <Text className='mb-4 md:mb-8'>
-                    Each vertical holds a different frequency. Explore what calls to you, and enter where your energy feels most alive.
+                <Text className=''>
+                    Each portal holds a different frequency. Explore what calls to you, and enter where your energy feels most alive.
                 </Text>
-                <div className='flex justify-center gap-10 md:gap-20'>
+                {/* <div className='flex justify-center gap-10 md:gap-20'>
                     <FilledButton>
                         Enter the Grid
                     </FilledButton>
-                </div>
+                </div> */}
             </div>
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
-            
+
             <div className='container py-8 md:py-18 text-center'>
                 <div className='mb-12 md:mb-24'>
                     <SubTitle className='mb-12 md:mb-24'>
-                        Active Verticals
+                        Active Portals
                     </SubTitle>
                     <div className='zen-card-grid grid grid-cols-1 md:grid-cols-2 gap-16 justify-items-center'>
                         {activeZenshiftCategoryLists.map((item: ZenshiftCategoryProps, index: number) => (
@@ -153,7 +153,7 @@ const ExploreVerticals = () => {
                 </div>
                 <div>
                     <SubTitle className='mb-12 md:mb-24'>
-                        Coming Falls {new Date().getFullYear()}
+                        Coming Fall {new Date().getFullYear()}
                     </SubTitle>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-16 justify-items-center'>
                         {comingZenshiftCategoryLists.map((item: ZenshiftCategoryProps, index: number) => (
@@ -195,7 +195,7 @@ const ExploreVerticals = () => {
                     </SubTitle>
                     <div className='flex justify-center'>
                         <LargeFilledButton onClick={handleClick('/zen-ai')}>
-                            Ask ZenAI
+                            Follow the Nudge
                         </LargeFilledButton>
                     </div>
                 </motion.div>

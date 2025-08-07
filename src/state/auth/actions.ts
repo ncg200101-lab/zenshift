@@ -63,6 +63,7 @@ export const signInAction = createAsyncThunk<
                 role: result.user.role,
                 avatar: result.user.avatar || '',
                 token: result.token,
+                subscription: result.user.subscription,
             };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Login failed';

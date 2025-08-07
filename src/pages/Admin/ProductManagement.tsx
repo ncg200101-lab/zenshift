@@ -36,7 +36,8 @@ interface FormData {
     description: string;
     shift: string;
     category: string;
-    price: string;
+    price: number;
+    isFreebie: boolean;
     frequencyInfo: FrequencyInfo;
     additionalDetails: AdditionalDetails;
 }
@@ -47,7 +48,8 @@ const initialForm: FormData = {
     description: '',
     shift: 'Abundance',
     category: 'abundance-field',
-    price: '',
+    price: 0,
+    isFreebie: false,
     frequencyInfo: {
         color: 'Red',
         size: 'XS',
@@ -64,7 +66,7 @@ const initialForm: FormData = {
 
 const ProductManagement = () => {
     const dispatch = useAppDispatch();
-    
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [products, setProducts] = useState<ProductTypes[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -74,6 +76,7 @@ const ProductManagement = () => {
     const [form, setForm] = useState<FormData>(initialForm);
     const [showProductImage, setShowProductImage] = useState<string>('');
     const [productFile, setProductFile] = useState<File | undefined>(undefined);
+    const [freebieFile, setFreebieFile] = useState<File | undefined>();   // <-- NEW
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [showNewModal, setShowNewModal] = useState<boolean>(false);
@@ -84,9 +87,10 @@ const ProductManagement = () => {
         setIsLoading(true);
         try {
             const result = await dispatch(
-                getAllProductsAction({ 
-                    page: currentPage.toString(), 
-                    limit: '10' 
+                getAllProductsAction({
+                    page: currentPage.toString(),
+                    limit: '10',
+                    includePrintify: 'true'
                 })
             ).unwrap();
             setProducts(result.products || []);
@@ -143,6 +147,12 @@ const ProductManagement = () => {
         }
     }, []);
 
+    const handleFreebieFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        console.log(file);
+        if (file) setFreebieFile(file);
+    }, []); // <-- NEW
+
     const handleSelectChange = useCallback((section: string, value: string): void => {
         if (section.startsWith('frequencyInfo.')) {
             const key = section.split('.')[1];
@@ -160,7 +170,7 @@ const ProductManagement = () => {
             }));
             if (section === 'shift') {
                 const defaultCategory = categoryOptions
-                    .filter((item: CategoryOption) => item.shift === value)[0]?.value || 
+                    .filter((item: CategoryOption) => item.shift === value)[0]?.value ||
                     'abundance-field';
                 setForm((prev) => ({
                     ...prev,
@@ -179,7 +189,8 @@ const ProductManagement = () => {
             description: product.description,
             shift: product.shift,
             category: product.category,
-            price: product.price?.toString() || '',
+            price: product.price || 0,
+            isFreebie: product.isFreebie || false,
             frequencyInfo: {
                 color: product.frequencyInfo?.color || 'Red',
                 size: product.frequencyInfo?.size || 'XS',
@@ -210,66 +221,50 @@ const ProductManagement = () => {
         setImageError(null);
     }, []);
 
-    const handleEditSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
-        e.preventDefault();
-        if (editProduct) {
-            setActionLoading(true);
-            try {
-                const formData = new FormData();
-                if (productFile) {
-                    formData.append('file', productFile);
-                }
-                formData.append('name', form.name);
-                formData.append('summary', form.summary);
-                formData.append('description', form.description);
-                formData.append('shift', form.shift);
-                formData.append('category', form.category);
-                formData.append('price', form.price);
-                formData.append('frequencyInfo', JSON.stringify(form.frequencyInfo));
-                formData.append('additionalDetails', JSON.stringify(form.additionalDetails));
-                await dispatch(
-                    updateProductAction({
-                        id: editProduct._id,
-                        data: formData,
-                    })
-                ).unwrap();
-                setShowEditModal(false);
-                fetchAllProducts();
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setActionLoading(false);
-            }
-        }
-    }, [dispatch, editProduct, form, productFile, fetchAllProducts]);
+    const buildFormData = () => {
+        const fd = new FormData();
+        if (productFile) fd.append('file', productFile);
+        if (form.additionalDetails.shippingFormat === "Digital Product" && freebieFile) fd.append('freebieFile', freebieFile); // <-- NEW
+        fd.append('name', form.name);
+        fd.append('summary', form.summary);
+        fd.append('description', form.description);
+        fd.append('shift', form.shift);
+        fd.append('category', form.category);
+        fd.append('price', form.price.toString());
+        fd.append('isFreebie', form.isFreebie.toString());
+        fd.append('frequencyInfo', JSON.stringify(form.frequencyInfo));
+        fd.append('additionalDetails', JSON.stringify(form.additionalDetails));
+        return fd;
+    };
 
-    const handleNewSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
+    const handleNewSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         if (!showProductImage || !productFile) {
-            setImageError('Please upload an image.');
+            setImageError('Please upload a product image.');
             return;
         }
         setActionLoading(true);
         try {
-            const formData = new FormData();
-            formData.append('file', productFile);
-            formData.append('name', form.name);
-            formData.append('summary', form.summary);
-            formData.append('description', form.description);
-            formData.append('shift', form.shift);
-            formData.append('category', form.category);
-            formData.append('price', form.price);
-            formData.append('frequencyInfo', JSON.stringify(form.frequencyInfo));
-            formData.append('additionalDetails', JSON.stringify(form.additionalDetails));
-            await dispatch(createProductAction(formData)).unwrap();
+            await dispatch(createProductAction(buildFormData())).unwrap();
             setShowNewModal(false);
             fetchAllProducts();
-        } catch (e) {
-            console.error(e);
         } finally {
             setActionLoading(false);
         }
-    }, [dispatch, form, productFile, fetchAllProducts, showProductImage]);
+    }, [dispatch, buildFormData, fetchAllProducts, showProductImage, productFile]);
+
+    const handleEditSubmit = useCallback(async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editProduct) return;
+        setActionLoading(true);
+        try {
+            await dispatch(updateProductAction({ id: editProduct._id, data: buildFormData() })).unwrap();
+            setShowEditModal(false);
+            fetchAllProducts();
+        } finally {
+            setActionLoading(false);
+        }
+    }, [dispatch, editProduct, buildFormData, fetchAllProducts]);
 
     const handleDeleteConfirm = useCallback(async (): Promise<void> => {
         if (deleteProduct) {
@@ -323,23 +318,23 @@ const ProductManagement = () => {
             </div>
             {isLoading ? (
                 <div className="flex justify-center items-center py-16">
-                    <svg 
-                        className="animate-spin h-8 w-8 text-purple-500" 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        fill="none" 
+                    <svg
+                        className="animate-spin h-8 w-8 text-purple-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
                         viewBox="0 0 24 24"
                     >
-                        <circle 
-                            className="opacity-25" 
-                            cx="12" 
-                            cy="12" 
-                            r="10" 
-                            stroke="currentColor" 
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
                             strokeWidth="4"
                         />
-                        <path 
-                            className="opacity-75" 
-                            fill="currentColor" 
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
                             d="M4 12a8 8 0 018-8v8z"
                         />
                     </svg>
@@ -380,10 +375,10 @@ const ProductManagement = () => {
                                 >
                                     <td className="px-4 py-2 border-b">
                                         {product.image && (
-                                            <img 
-                                                src={product.image} 
-                                                alt={product.name} 
-                                                className="w-12 h-12 object-cover rounded mx-auto" 
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="w-12 h-12 object-cover rounded mx-auto"
                                             />
                                         )}
                                     </td>
@@ -400,7 +395,11 @@ const ProductManagement = () => {
                                         {product.category}
                                     </td>
                                     <td className="px-4 py-2 border-b text-gray-700">
-                                        ${product.price}
+                                        {product.isFreebie ? (
+                                            <span className="font-semibold text-green-600">FREE</span>
+                                        ) : (
+                                            `$${product.price.toFixed(2)}`
+                                        )}
                                     </td>
                                     <td className="px-4 py-2 border-b space-x-2">
                                         <div className='flex justify-center space-x-2'>
@@ -452,30 +451,42 @@ const ProductManagement = () => {
                 open={showEditModal}
                 form={form}
                 isLoading={actionLoading}
-                onClose={handleCloseEditModal}
+                onClose={() => setShowEditModal(false)}
                 handleChange={handleChange}
                 handleFileChange={handleFileChange}
+                handleFreebieFileChange={handleFreebieFileChange}  // <-- NEW
+                freebieFile={freebieFile}                          // <-- NEW
                 handleSubmit={handleEditSubmit}
                 modalTitle="Edit Product"
                 submitLabel="Save"
                 imageSrc={showProductImage}
                 imageError={imageError}
-                handleSelectChange={handleSelectChange}
+                handleSelectChange={(section, value) =>
+                    setForm(prev => section.startsWith('frequencyInfo.')
+                        ? { ...prev, frequencyInfo: { ...prev.frequencyInfo, [section.split('.')[1]]: value } }
+                        : { ...prev, [section]: value })
+                }
             />
-            {/* New Product Modal */}
+
             <ProductModal
                 open={showNewModal}
                 form={form}
                 isLoading={actionLoading}
-                onClose={handleCloseNewModal}
+                onClose={() => setShowNewModal(false)}
                 handleChange={handleChange}
                 handleFileChange={handleFileChange}
+                handleFreebieFileChange={handleFreebieFileChange}   // <-- NEW
+                freebieFile={freebieFile}                           // <-- NEW
                 handleSubmit={handleNewSubmit}
                 modalTitle="New Product"
                 submitLabel="Create"
                 imageSrc={showProductImage}
                 imageError={imageError}
-                handleSelectChange={handleSelectChange}
+                handleSelectChange={(section, value) =>
+                    setForm(prev => section.startsWith('frequencyInfo.')
+                        ? { ...prev, frequencyInfo: { ...prev.frequencyInfo, [section.split('.')[1]]: value } }
+                        : { ...prev, [section]: value })
+                }
             />
             {/* Delete Modal */}
             {showDeleteModal && deleteProduct && (

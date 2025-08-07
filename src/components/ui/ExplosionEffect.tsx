@@ -139,7 +139,7 @@ const ExplosionEffect = ({
     }, [dotColors, dotQuantity, dotSizeMax, dotSizeMin, emitterSize, speed, explosionRadius, gravity]);
 
     return (
-        <div className={`relative w-fit ${className}`}>
+        <div className={`relative w-full ${className}`}>
             <div ref={elementRef} className={`relative z-[10] w-full ${className}`}>
                 {children}
             </div>

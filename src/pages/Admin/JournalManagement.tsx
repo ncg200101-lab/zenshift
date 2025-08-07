@@ -17,14 +17,18 @@ import { ShiftTypes } from '../../state/product/types';
 export interface FormData {
     title: string;
     description: string;
+    summary: string;
     shift: ShiftTypes;
+    topics: string[];
     image: string;
 }
 
 const initialForm: FormData = {
     title: '',
     description: '',
+    summary: '',
     shift: 'Abundance',
+    topics: [],
     image: '',
 };
 
@@ -95,7 +99,14 @@ const JournalManagement = () => {
     const handleSelectChange = useCallback((section: string, value: string): void => {
         setForm((prev) => ({
             ...prev,
-            [section]: value,
+            [section]: section === 'topics' ? JSON.parse(value) : value,
+        }));
+    }, []);
+
+    const handleRichTextChange = useCallback((field: string, value: string): void => {
+        setForm((prev) => ({
+            ...prev,
+            [field]: value,
         }));
     }, []);
 
@@ -105,7 +116,9 @@ const JournalManagement = () => {
         setForm({
             title: journal.title,
             description: journal.description,
+            summary: journal.summary,
             shift: journal.shift,
+            topics: journal.topics || [],
             image: journal.image,
         });
         setShowEditModal(true);
@@ -136,7 +149,10 @@ const JournalManagement = () => {
                 }
                 formData.append('title', form.title);
                 formData.append('description', form.description);
+                formData.append('summary', form.summary);
                 formData.append('shift', form.shift);
+                // Append topics as a single field
+                formData.append('topics', JSON.stringify(form.topics));
                 await dispatch(
                     updateJournalAction({
                         id: editJournal._id,
@@ -165,7 +181,10 @@ const JournalManagement = () => {
             formData.append('file', journalFile);
             formData.append('title', form.title);
             formData.append('description', form.description);
+            formData.append('summary', form.summary);
             formData.append('shift', form.shift);
+            // Append topics as a single field
+            formData.append('topics', JSON.stringify(form.topics));
             await dispatch(createJournalAction(formData)).unwrap();
             setShowNewModal(false);
             fetchAllJournals();
@@ -261,10 +280,16 @@ const JournalManagement = () => {
                                     Title
                                 </th>
                                 <th className="px-4 py-3 border-b font-semibold text-gray-700">
+                                    Summary
+                                </th>
+                                <th className="px-4 py-3 border-b font-semibold text-gray-700">
                                     Description
                                 </th>
                                 <th className="px-4 py-3 border-b font-semibold text-gray-700">
                                     Shift
+                                </th>
+                                <th className="px-4 py-3 border-b font-semibold text-gray-700">
+                                    Topics
                                 </th>
                                 <th className="px-4 py-3 border-b font-semibold text-gray-700">
                                     Actions
@@ -290,10 +315,34 @@ const JournalManagement = () => {
                                         {journal.title}
                                     </td>
                                     <td className="px-4 py-2 border-b text-gray-700">
-                                        {journal.description}
+                                        {journal.summary ? journal.summary.slice(0, 30) + '...' : 'No summary available'}
+                                    </td>
+                                    <td className="px-4 py-2 border-b text-gray-700">
+                                        {journal.description ? 
+                                            journal.description.replace(/<[^>]*>/g, '').slice(0, 30) + '...' : 
+                                            'No description available'
+                                        }
                                     </td>
                                     <td className="px-4 py-2 border-b text-gray-700">
                                         {journal.shift}
+                                    </td>
+                                    <td className="px-4 py-2 border-b text-gray-700">
+                                        {journal.topics && journal.topics.length > 0 ? (
+                                            <div className="flex flex-wrap gap-1">
+                                                {journal.topics.slice(0, 2).map((topic, index) => (
+                                                    <span key={index} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                                                        {topic}
+                                                    </span>
+                                                ))}
+                                                {journal.topics.length > 2 && (
+                                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                                        +{journal.topics.length - 2}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-400 text-sm">No topics</span>
+                                        )}
                                     </td>
                                     <td className="px-4 py-2 border-b space-x-2">
                                         <div className='flex justify-center space-x-2'>
@@ -347,6 +396,7 @@ const JournalManagement = () => {
                 isLoading={actionLoading}
                 onClose={handleCloseEditModal}
                 handleChange={handleChange}
+                handleRichTextChange={handleRichTextChange}
                 handleFileChange={handleFileChange}
                 handleSubmit={handleEditSubmit}
                 modalTitle="Edit Journal"
@@ -362,6 +412,7 @@ const JournalManagement = () => {
                 isLoading={actionLoading}
                 onClose={handleCloseNewModal}
                 handleChange={handleChange}
+                handleRichTextChange={handleRichTextChange}
                 handleFileChange={handleFileChange}
                 handleSubmit={handleNewSubmit}
                 modalTitle="New Journal"

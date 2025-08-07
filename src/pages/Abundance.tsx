@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../state/hooks';
 import { RootState } from '../state/store';
 import { VerticalsButton } from '../components/ui/Buttons';
-import BlogPost from '../components/ui/BlogPost';
+import JournalItem from '../components/ui/JournalItem';
 import CuratedCard from '../components/ui/CuratedCard';
 import ResourceCard from '../components/ui/ResourceCard';
 import { SubTitle, Typography, Text } from '../components/ui/Text';
 import { RecommendedResourceTypes } from '../state/abundance/types';
-import { BlogPostTypes } from '../state/global/types';
+import { JournalTypes } from '../state/journal/types';
 import { CuratedCategoryTypes } from '../state/product/types';
-import { getAllAbundanceBlogPostsAction } from '../state/abundance/actions';
+import { getAllJournalsAction } from '../state/journal/actions';
 import SpinLoader from '../components/ui/SpinLoader';
 import ExplosionEffect from '../components/ui/ExplosionEffect';
 
@@ -20,22 +20,26 @@ const Abundance = () => {
     const { curatedCategories } = useAppSelector((state: RootState) => state.product);
     const abundanceCuratedCategories = curatedCategories.filter(category => category.shift === 'Abundance');
 
-    const [isBlogLoading, setIsBlogLoading] = useState<boolean>(false);
-    const [blogPosts, setBlogPosts] = useState<BlogPostTypes[]>([]);
+    const [isJournalLoading, setIsJournalLoading] = useState<boolean>(false);
+    const [journals, setJournals] = useState<JournalTypes[]>([]);
 
     useEffect(() => {
-        const fetchBlogPost = async () => {
-            setIsBlogLoading(true);
+        const fetchJournals = async () => {
+            setIsJournalLoading(true);
             try {
-                const result = await dispatch(getAllAbundanceBlogPostsAction()).unwrap();
-                setBlogPosts(result);
+                const result = await dispatch(getAllJournalsAction({
+                    limit: '18',
+                    shift: 'Abundance',
+                    sortBy: 'newest'
+                })).unwrap();
+                setJournals(result.journals || []);
             } catch(e) {
                 console.error(e);
             } finally {
-                setIsBlogLoading(false);
+                setIsJournalLoading(false);
             }
         };
-        fetchBlogPost();
+        fetchJournals();
     }, [dispatch]);
 
     return (
@@ -92,7 +96,7 @@ const Abundance = () => {
                                 </p>
                             </motion.div>
                             <div className='flex flex-wrap items-center justify-center gap-4'>
-                                <ExplosionEffect>
+                                {/* <ExplosionEffect>
                                     <button
                                         className='py-2 md:py-4 px-4 md:px-8 text-xl md:text-3xl text-[#391c58] bg-[#f8c035] border border-[#391c58] rounded-full hover:bg-[#391c58] hover:text-[#f8c035] hover:scale-[1.02] transition-all duration-300'
                                     >
@@ -105,7 +109,7 @@ const Abundance = () => {
                                     >
                                         Shop Prosperity Tools
                                     </button>
-                                </ExplosionEffect>    
+                                </ExplosionEffect>     */}
                             </div>
                         </div>
                     </div>
@@ -138,47 +142,42 @@ const Abundance = () => {
                     The Frequency of Overflow
                 </SubTitle>
                 <Text>
-                    Abundance isn't earned. It's received. When your field is coherent, your life reflects it. This vertical is about <b>healing your money story,</b> deconstructing scarcity, and <b>stepping into overflow</b>
+                    Abundance isn't earned. It's received. When your field is coherent, your life reflects it. This portal is about <b>healing your money story,</b> deconstructing scarcity, and <b>stepping into overflow</b>
                 </Text>
             </motion.div>
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
             <div className='container py-12 md:py-24 text-center'>
-                <SubTitle className='mb-8 md:mb-16'>
-                    Abundance Insight Blog
-                </SubTitle>
-                {isBlogLoading ? (
+                <SubTitle className='mb-8 md:mb-16'>ZenShift Abundance Journal</SubTitle>
+                {isJournalLoading ? (
                     <SpinLoader className='flex-grow' size={50} />
-                ) : blogPosts.length === 0 ? (
+                ) : journals.length === 0 ? (
                     <div className='container flex flex-grow items-center justify-center py-12 md:py-20'>
                         <Typography className='text-gray-500'>
-                            Product not found
+                            No abundance journals found
                         </Typography>
                     </div>
                 ) : (
-                    <div className='flex justify-center mb-12'>
-                        <div className='space-y-8'>
-                            {blogPosts.map((post: BlogPostTypes, index: number) => (
-                                <BlogPost
-                                    key={index}
-                                    id={post._id}
-                                    title={post.title}
-                                    description={post.description}
-                                    imageSrc={post.imageSrc?.[0] || ''}
-                                    readTime={post?.readTime || ''}
-                                    date={post.createdAt || ''}
-                                />
-                            ))}
-                        </div>
+                    <div className='flex flex-wrap justify-center gap-10'>
+                        {journals.map((journal: JournalTypes, index: number) => (
+                            <JournalItem
+                                key={index}
+                                id={journal._id}
+                                src={journal.image}
+                                title={journal.title}
+                                vertical={journal.shift}
+                                summary={journal.summary}
+                            />
+                        ))}
                     </div>
                 )}
                 <div className='flex justify-center'>
-                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2'>
+                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2' hidden>
                         Explore More Insights
                     </VerticalsButton>
                 </div>
             </div>
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
-            <motion.div 
+            {/* <motion.div 
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -188,7 +187,7 @@ const Abundance = () => {
                     Get Started Free
                 </SubTitle>
                 <div className='flex justify-center'>
-                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2'>
+                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2' hidden>
                         Get Access Abundance Tools
                     </VerticalsButton>
                 </div>
@@ -210,14 +209,14 @@ const Abundance = () => {
                     ))}
                 </div>
                 <div className='flex justify-center'>
-                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2'>
+                    <VerticalsButton leftColor='#763AF5' rightColor='#9F0CF2' hidden>
                         View Recommended Tools
                     </VerticalsButton>
                 </div>
                 <Text className='mt-6'>
                     Note: Some links are affiliate. We only share what aligns.
                 </Text>
-            </div>
+            </div> */}
         </>
     );
 };

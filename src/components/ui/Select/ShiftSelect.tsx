@@ -10,6 +10,8 @@ export const shiftOptions: readonly ShiftOption[] = [
     { value: 'Apothecary', label: 'Apothecary' },
     { value: 'Interior', label: 'Interior' },
     { value: 'Health', label: 'Health' },
+    { value: 'ZenShift', label: 'ZenShift' },
+    { value: 'ZenAI', label: 'ZenAI' },
     // { value: 'Kids', label: 'Kids' },
     // { value: 'Masters', label: 'Masters' },
     // { value: 'Travels', label: 'Travels' },

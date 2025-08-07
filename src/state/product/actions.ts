@@ -7,7 +7,8 @@ import {
     getReviewsByProductService,
     createProductService,
     updateProductService,
-    deleteProductService
+    deleteProductService,
+    getBlogByIdService
 } from './services';
 import {
     ProductTypes,
@@ -21,6 +22,7 @@ import {
     FrequencySizeTypes,
     FrequencyStyleTypes,
 } from './types';
+import { BlogPostTypes } from '../global/types';
 
 export const getProductByIdAction = createAsyncThunk<
     ProductTypes,
@@ -65,6 +67,7 @@ export const getAllProductsAction = createAsyncThunk<
         page?: string;
         limit?: string;
         sortBy?: SortByTypes;
+        includePrintify?: string;
     } | undefined,
     { rejectValue: string }
 >(
@@ -203,4 +206,30 @@ export const deleteProductAction = createAsyncThunk<
     }
 );
 
-
+export const getBlogByIdAction = createAsyncThunk<
+    BlogPostTypes,
+    string,
+    { rejectValue: string }
+>(
+    'product/getBlogById',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await getBlogByIdService(id);
+            const result = handleActionResponse<BlogPostTypes>(
+                response,
+                'Get blog by id successfully',
+                'Failed to get blog'
+            );
+            if (typeof result === 'string') {
+                return rejectWithValue(result);
+            }
+            return result;
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error
+                ? error.message
+                : 'Failed to get blog';
+            toast.error(errorMessage, { autoClose: 2000 });
+            return rejectWithValue(errorMessage);
+        }
+    }
+);

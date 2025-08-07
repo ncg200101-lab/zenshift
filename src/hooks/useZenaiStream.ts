@@ -34,16 +34,34 @@ export function useZenaiStream() {
         done = doneReading;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
-          chunk.split('__END_RESPONSE__').forEach(line => {
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.replace('data: ', '');
-              if (data.startsWith('[DONE')) {
+              
+              // Check for special messages
+              if (data === '[DONE]') {
                 setLoading(false);
-              } else if (!data.startsWith('[ERROR')) {
-                setResponse(prev => prev + data);
+                return;
+              } else if (data.startsWith('[ERROR')) {
+                setError(data);
+                setLoading(false);
+                return;
+              }
+              
+              // Parse JSON content
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.content) {
+                  setResponse(prev => prev + parsed.content);
+                }
+              } catch (e) {
+                // If it's not valid JSON, ignore it
+                console.warn('Invalid JSON in stream:', data);
               }
             }
-          });
+          }
         }
       }
       setLoading(false);

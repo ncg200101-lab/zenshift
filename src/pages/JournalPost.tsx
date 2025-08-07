@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAppDispatch } from '../state/hooks';
 import { FullWidthButton } from '../components/ui/Buttons';
 import { MainTitle, SubTitle, Text, Typography } from '../components/ui/Text';
+import RichTextDisplay from '../components/ui/RichTextDisplay';
 import { getJournalByIdAction } from '../state/journal/actions';
 import { JournalTypes } from '../state/journal/types';
 import SpinLoader from '../components/ui/SpinLoader';
@@ -63,7 +64,7 @@ const articleItems = [
     },
 ]
 
-const BlogPost = () => {
+const JournalPost = () => {
     const dispatch = useAppDispatch();
     const { id } = useParams();
 
@@ -149,24 +150,30 @@ const BlogPost = () => {
                         <i>A frequency drop from the ZenShift Field</i>
                     </Text>
                     <p className='font-lato text-lg md:text-xl'>
-                        <span className='mr-2'><b>Author:</b> {currectJournal.author.name}</span>
+                        {/* <span className='mr-2'><b>Author:</b> {currectJournal.author.name}</span> */}
                         <span><b>Date:</b> {formatDate(currectJournal.createdAt)}</span>
                         <br />
-                        <span><b>Vaticals:</b> ZenShift {capitalize(currectJournal.shift)}</span>
+                        <span><b>Portals:</b> ZenShift {capitalize(currectJournal.shift)}</span>
                     </p>
                 </div>
                 <div className='mb-6 md:mb-12'>
                     <div className='w-full sm:w-2/3 max-w-2xl mx-auto'>
-                        <img className='w-full' src={currectJournal.image || ''} alt={currectJournal.title} />
+                        <div className='w-full flex items-center overflow-hidden' style={{ aspectRatio: 1 / 1 }}>
+                            <img className='w-full h-full object-cover' src={currectJournal.image || ''} alt={currectJournal.title} />
+                        </div>
                     </div>
                 </div>
-                <div className='flex flex-col lg:flex-row gap-6 text-left mb-12'>
+                <div className='flex flex-col lg:flex-row gap-6 text-left mb-12 md:max-w-[1200px] mx-auto'>
                     <div className='flex-grow'>
                         <div className='space-y-4 md:space-y-8 mb-6 md:mb-12'>
-                            <Text>
-                                Your home is more than a place to live—it's a canvas for your energy. At ZenShiftInteriors, we believe in crafting spaces that resonate with your soul's frequency, fostering peace, clarity, and connection. Whether it's a quiet corner for meditation or a vibrant living area that radiates abundance, every space can become sacred with intention.
+                            <Text className='text-gray-700'>
+                                {currectJournal.summary}
                             </Text>
-                            <div>
+                            <RichTextDisplay 
+                                content={currectJournal.description} 
+                                className='text-gray-700'
+                            />
+                            {/* <div>
                                 <Typography className='text-left mb-4'>
                                     Three Pillars of ZenShiftInteriors
                                 </Typography>
@@ -187,8 +194,8 @@ const BlogPost = () => {
                                         </Text>
                                     </li>
                                 </ul>
-                            </div>
-                            <div>
+                            </div> */}
+                            {/* <div>
                                 <Typography className='text-left mb-4'>
                                     Why It Matters
                                 </Typography>
@@ -205,9 +212,9 @@ const BlogPost = () => {
                                     <a href='/interiors'>ZenShiftInteriors tools</a>
                                     &nbsp;to guide your journey. Whether it's our Space Clearing Guide or a ZenShift Mug to anchor your morning ritual, every step brings you closer to a home that feels like a sanctuary.
                                 </Text>
-                            </div>
+                            </div> */}
                         </div>
-                        <div className=''>
+                        {/* <div className=''>
                             <h4 className='text-sm text-[#42526E] uppercase mb-8'>
                                 Here are some related articles you may find interesting:
                             </h4>
@@ -238,9 +245,9 @@ const BlogPost = () => {
                                     </motion.div>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
-                    <div className='w-full sm:w-0 sm:min-w-[380px]'>
+                    {/* <div className='w-full sm:w-0 sm:min-w-[380px]'>
                         <Text className='uppercase'>
                             Popular Posts
                         </Text>
@@ -261,7 +268,7 @@ const BlogPost = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div>
                     <SubTitle className='mb-6 md:mb-12'>
@@ -293,4 +300,4 @@ const BlogPost = () => {
     )
 };
 
-export default BlogPost ;
+export default JournalPost;

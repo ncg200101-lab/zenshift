@@ -59,7 +59,17 @@ const About = () => {
                     </MainTitle>
                 </motion.div>
                 <Text className='max-w-4xl mx-auto mb-8 md:mb-16'>
-                    ZenShift was built for the ones waking up to more. More depth. More truth.More life. A new way of living is arriving and you've been feeling it all along.
+                    ZenShift was built for the ones waking up to more.<br />
+                    More depth. More truth. More life.<br />
+                    <br />
+                    A new way of living is arriving and you've been feeling it all along.<br />
+                    It's not random. It's a path.<br />
+                    <br />
+                    That path moves through eight energetic shifts we call the ZenShift Ascension Phases:<br />
+                    Awakening • Pauses • Thresholds • Quiet Seasons • Downloads • Integration • Expansion • Embodiment<br />
+                    <br />
+
+                    Each phase opens a new layer of coherence, clarity, and embodied living, guiding you home to the life you've always known was possible.
                 </Text>
                 <div className='flex justify-center gap-10 md:gap-20'>
                     <FilledButton onClick={scrollToVision}>

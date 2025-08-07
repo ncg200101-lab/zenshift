@@ -4,7 +4,7 @@ const SocialIcons = () => {
     return (
         <div className='flex justify-center gap-x-6'>
             <motion.a 
-                href='https://www.facebook.com/ZenshiftOfficial' 
+                href='https://www.facebook.com/profile.php?id=61576869086046' 
                 target='_blank'
                 aria-label='Facebook' 
                 className='w-12 h-12 md:w-[100px] md:h-[100px] rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg relative group'

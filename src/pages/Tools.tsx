@@ -1,31 +1,75 @@
 import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import InsideCard from '../components/ui/InsideCard';
 import { FullWidthButton } from '../components/ui/Buttons';
 import { MainTitle, SubTitle, Text } from '../components/ui/Text';
+import ExplosionEffect from '../components/ui/ExplosionEffect';
+import ConvertKitForm from '../components/ui/ConvertKitForm';
 
-interface InsideItemProps {
-    title: string;
-    subtitle?: string;
-};
+interface ZenshiftCategoryProps {
+    title?: string;
+    text?: string;
+    image: string;
+    link?: string;
+}
 
-const insideLists: InsideItemProps[] = [
+const activeZenshiftCategoryLists: ZenshiftCategoryProps[] = [
     {
-        title: '5D Home Starter Pack',
+        title: 'ZenShift Abundance',
+        text: 'Wealth is Frequency Tap In',
+        image: '/assets/categories/zen_abundance.jpg',
+        link: 'Abundance'
     },
     {
-        title: 'Emotional Mastery Map',
+        title: 'ZenShift Apothecary',
+        text: 'Plant tools, Frequency codes, Affiliate-powered',
+        image: '/assets/categories/zen_aprothecary.jpg',
+        link: 'Apothecary'
     },
     {
-        title: 'Chakra Design Moodboard',
+        title: 'ZenShift Interior',
+        text: 'Shift Your Surroundings Shift Your Life',
+        image: '/assets/categories/zen_interior.jpg',
+        link: 'Interiors'
     },
     {
-        title: 'ZenShift Vision Guide',
-        subtitle: 'You\'ve Been Here Before'
+        title: 'ZenShift Health',
+        text: 'Your Body is an energy field Treat it like one',
+        image: '/assets/categories/zen_health.jpg',
+        link: 'Health'
     },
-]
+];
+
+const comingZenshiftCategoryLists: ZenshiftCategoryProps[] = [
+    {
+        title: 'ZenShift Kids',
+        image: '/assets/categories/zen_coming_kids.jpg'
+    },
+    {
+        title: 'ZenShift Masters',
+        image: '/assets/categories/zen_coming_masters.jpg'
+    },
+    {
+        title: 'ZenShift Travel',
+        image: '/assets/categories/zen_coming_travels.jpg'
+    },
+    {
+        title: 'ZenShift Academy',
+        image: '/assets/categories/zen_coming_academy.jpg'
+    },
+    {
+        title: 'ZenShift Collective',
+        image: '/assets/categories/zen_coming_collective.jpg'
+    },
+    {
+        title: 'ZenShift Golf',
+        image: '/assets/categories/zen_coming_golf.jpg'
+    },
+];
 
 const FreebieLib = () => {
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
 
@@ -46,6 +90,14 @@ const FreebieLib = () => {
             setIsLoading(false);
         }
     }, [email, isLoading]);
+
+    const handleClick = useCallback((portal?: string) => () => {
+        // if (link) {
+            navigate('/freebie-library');
+            navigate('/freebie-library', { state: { portal } });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // }
+    }, [navigate]);
 
     return (
         <>
@@ -70,7 +122,7 @@ const FreebieLib = () => {
                     Our gift to you: digital downloads designed to support your journey into more clarity, harmony, and alignment.
                 </Text>
                 <div className='email-form'>
-                    <form className='flex flex-col gap-8 sm:px-10 md:px-30' onSubmit={handleAccessSubmit}>
+                    {/* <form className='flex flex-col gap-8 sm:px-10 md:px-30' onSubmit={handleAccessSubmit}>
                         <div>
                             <label htmlFor='email' className='sr-only'>Email Address</label>
                             <input 
@@ -93,11 +145,84 @@ const FreebieLib = () => {
                                 Access The Library
                             </FullWidthButton>
                         </motion.div>
-                    </form>
+                    </form> */}
+                    <ConvertKitForm formId="8250927" />
                 </div>
             </div>
-            <div className='w-full h-[3px] bg-[#00f1ff]'></div>
-            <div className='container py-12 md:py-24 text-center'>
+            <div className='w-full h-[3px] bg-[#00f1ff]'>
+                
+            </div>
+            <div className='container py-8 md:py-18 text-center'>
+                <div className='mb-12 md:mb-24'>
+                    <SubTitle className='mb-12 md:mb-24'>
+                        Active Portals
+                    </SubTitle>
+                    <div className='zen-card-grid grid grid-cols-1 md:grid-cols-2 gap-16 justify-items-center'>
+                        {activeZenshiftCategoryLists.map((item: ZenshiftCategoryProps, index: number) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                whileHover={{ scale: 1.04 }}
+                                transition={{ duration: 0.6 }}
+                                className='rounded-xl overflow-hidden shadow-lg flex flex-col w-full max-w-[420px] hover:shadow-[0_0_20px_rgba(255,230,77,0.4)] cursor-pointer'
+                                onClick={handleClick(item.link)}
+                            >
+                                <ExplosionEffect className='h-full flex flex-col' dotQuantity={60} explosionRadius={500} speed={0.8}>
+                                    <div className='relative flex flex-col items-start min-h-[180px]'>
+                                        <img src={item.image} alt='ZenShift Interior' className='w-full h-full' />
+                                    </div>
+                                    <div className='bg-[#2d2320] p-6 flex flex-col flex-grow items-center'>
+                                        <div className='flex-grow'>
+                                            <div className='font-playfair text-white zen-card-title py-4 tracking-widest'>{item.title}</div>
+                                            <div className='font-lato text-[#d6d1c4] text-[20px] mb-4 text-center leading-5'>
+                                                {item.text}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className='learn-more-button rounded-lg border-2 border-white text-white px-6 py-2 flex items-center gap-2 font-lato font-semibold'
+                                        >
+                                            ENTER <span className='text-lg'>→</span>
+                                        </button>
+                                    </div>
+                                </ExplosionEffect>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <SubTitle className='mb-12 md:mb-24'>
+                        Coming Fall {new Date().getFullYear()}
+                    </SubTitle>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-16 justify-items-center'>
+                        {comingZenshiftCategoryLists.map((item: ZenshiftCategoryProps, index: number) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 0.7, y: 0 }}
+                                whileHover={{ scale: 1.00 }}
+                                transition={{ duration: 0.6 }}
+                                className='rounded-xl overflow-hidden shadow-lg flex flex-col w-full max-w-[420px] hover:shadow-[0_0_20px_rgba(255,230,77,0.4)] bg-[#fff]'
+                                // onClick={() => setOpen(true)}
+                            >
+                                <ExplosionEffect dotQuantity={60} explosionRadius={500} speed={0.8}>
+                                    <div className='rounded-xl overflow-hidden bg-[#f9eedd] flex flex-col w-full shadow-lg'>
+                                        <div className='relative'>
+                                            <img src={item.image} alt={item.title} className='w-full h-full' />
+                                        </div>
+                                        <div className='bg-[#2d2320] p-6 flex flex-col items-center'>
+                                            <div className='zen-coming-card-title font-playfair text-white text-2xl font-bold text-center tracking-widest max-w-[300px]'>
+                                                {item.title}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ExplosionEffect>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            {/* <div className='container py-12 md:py-24 text-center'>
                 <SubTitle className='mb-12 md:mb-24'>
                     What Is Inside<br/>The Library
                 </SubTitle>
@@ -106,7 +231,7 @@ const FreebieLib = () => {
                         <InsideCard key={index} title={item.title} buttonText='Preview' subtitle={item.subtitle || ''} />
                     ))}
                 </div>
-            </div>
+            </div> */}
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
             <motion.div 
                 initial={{ opacity: 0, y: 40 }}
@@ -122,7 +247,7 @@ const FreebieLib = () => {
                 </Text>
             </motion.div>
             <div className='w-full h-[3px] bg-[#00f1ff]'></div>
-            <motion.div 
+            {/* <motion.div 
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -136,14 +261,14 @@ const FreebieLib = () => {
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <FullWidthButton>
-                        Login to the LIbrary or Request Unlock Link
+                    <FullWidthButton onClick={handleClick('/freebie-library')}>
+                        Login to the Library or Request Unlock Link
                     </FullWidthButton>
                 </motion.div>
                 <Text className='mt-12'>
                     <i>Not sure which tool is right for you? Ask <a href='/zen-ai'>ZenAI.</a></i>
                 </Text>
-            </motion.div>
+            </motion.div> */}
         </>
     );
 }

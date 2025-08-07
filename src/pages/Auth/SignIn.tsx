@@ -1,19 +1,22 @@
 import { useState, useCallback, FormEvent } from 'react';
-import { useAppDispatch } from '../state/hooks';
-import { FacebookIcon, GoogleIcon } from '../components/CustomIcons';
-import ExplosionEffect from '../components/ui/ExplosionEffect';
-import { validateEmail, validatePassword } from '../utils/validation';
-import { useForm } from '../hooks/useForm';
-import { signUpAction } from '../state/auth/actions';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../state/hooks';
+import { FacebookIcon, GoogleIcon } from '../../components/CustomIcons';
+import ExplosionEffect from '../../components/ui/ExplosionEffect';
+import { validateEmail, validatePassword } from '../../utils/validation';
+import { useForm } from '../../hooks/useForm';
+import { signInAction } from '../../state/auth/actions';
+import { motion } from 'framer-motion';
 
-const SignUp = () => {
+const SignIn = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const { formState, handleChange, validateForm } = useForm(
-        ['name', 'email', 'password'],
+        ['email', 'password'],
         {
             email: validateEmail,
             password: validatePassword
@@ -35,88 +38,71 @@ const SignUp = () => {
     const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (isLoading) return;
-        
+
         if (!validateForm()) {
             return;
         }
 
         try {
             setIsLoading(true);
-            await dispatch(signUpAction({
-                name: formState.name as string,
+            const result = await dispatch(signInAction({
                 email: formState.email as string,
                 password: formState.password as string
             }));
+    
+            if (signInAction.fulfilled.match(result)) {
+                navigate('/');
+            }
         } catch(e) {
             console.error(e);
         } finally {
             setIsLoading(false);
         }
-    }, [dispatch, isLoading, formState.name, formState.email, formState.password, validateForm]);
+    }, [dispatch, isLoading, formState.email, formState.password, validateForm, navigate]);
 
     return (
         <>
-            <div className='hidden md:block md:w-full md:h-screen md:flex md:flex-row md:bg-[#BBAE8F] sign-desktop-background bg-size-[100%_100%] bg-cover bg-center bg-no-repeat'>
-                <div className='w-1/2'></div>
-                <div className='w-1/2 h-full bg-transparent flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-                    <div className='max-w-md w-full space-y-8'>
+            <div className='hidden md:flex flex-col bg-transparent min-h-screen w-full sign-desktop-background'>
+                <div className='flex flex-grow justify-center items-center p-6'>
+                    <div className='bg-[#ffffff30] rounded-3xl space-y-8 p-10 max-w-lg w-full'>
                         <div>
-                            <h2 className='mt-6 text-center text-[60px] font-playfair font-bold'>
-                                Create Account
+                            <h2 className='text-center text-white text-[60px] font-playfair font-bold'>
+                                Log In
                             </h2>
                         </div>
-                        <div className='chakra-row'>
-                            <div className='chakra-circle purple max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle indigo max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle blue max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle green max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle yellow max-w-10 max-h-10 min-w-10'></div>
-                            <div className='chakra-circle orange max-w-10 max-h-10 min-w-10'></div>
+                        <div className='chakra-row space-x-1'>
                             <div className='chakra-circle red max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle orange max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle yellow max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle green max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle blue max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle indigo max-w-10 max-h-10 min-w-10'></div>
+                            <div className='chakra-circle purple max-w-10 max-h-10 min-w-10'></div>
                         </div>
-                        <div className='mt-8 space-y-6'>
+                        <div className='mt-8'>
                             <div className='grid grid-cols-2 gap-4'>
                                 <button
                                     type='button'
-                                    className='w-full flex justify-center items-center py-2 px-4 border border-[#696969] rounded-lg text-sm font-medium text-[#696969] hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
+                                    className='w-full flex justify-center items-center py-2 px-4 border border-white rounded-lg text-sm font-medium text-white hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
                                     onClick={handleGoogleLogin}
                                 >
                                     <GoogleIcon />
-                                    <span className='ml-1'>Sign up with Google</span>
+                                    <span className='ml-1 text-white'>Sign in with Google</span>
                                 </button>
                                 <button
                                     type='button'
-                                    className='w-full flex justify-center items-center py-2 px-4 border border-[#696969] rounded-lg text-sm font-medium text-[#696969] hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
+                                    className='w-full flex justify-center items-center py-2 px-4 border border-white rounded-lg text-sm font-medium text-white hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
                                     onClick={handleFacebookLogin}
                                 >
                                     <FacebookIcon />
-                                    <span className='ml-1'>Sign up with Facebook</span>
+                                    <span className='ml-1 text-white'>Sign in with Facebook</span>
                                 </button>
                             </div>
 
-                            <div className='relative flex justify-center text-sm'>
-                                <span className='px-2 text-gray-500'>-OR-</span>
-                            </div>
-
-                            <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
+                            <form className='mt-12 space-y-6' onSubmit={handleSubmit}>
                                 <div className='rounded-md space-y-4 mb-2'>
                                     <div>
-                                        <label htmlFor='desktop-firstName' className='block text-sm font-medium text-[#696969]'>
-                                            First Name:
-                                        </label>
-                                        <input
-                                            id='desktop-firstName'
-                                            name='desktop-firstName'
-                                            type='text'
-                                            autoComplete='firstName'
-                                            value={formState.name as string}
-                                            onChange={handleChange('name')}
-                                            required
-                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor='desktop-email' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='desktop-email' className='block text-sm font-medium text-white'>
                                             Email:
                                         </label>
                                         <input
@@ -127,12 +113,12 @@ const SignUp = () => {
                                             value={formState.email as string}
                                             onChange={handleChange('email')}
                                             required
-                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-white placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                         />
                                         {formState.emailError && <div className='text-sm text-red-500 mt-1'>{formState.emailErrorMessage}</div>}
                                     </div>
                                     <div>
-                                        <label htmlFor='desktop-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='desktop-password' className='block text-sm font-medium text-white'>
                                             Password:
                                         </label>
                                         <div className='relative'>
@@ -144,7 +130,7 @@ const SignUp = () => {
                                                 value={formState.password as string}
                                                 onChange={handleChange('password')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-white placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -169,77 +155,71 @@ const SignUp = () => {
 
                                 <div className='flex items-center justify-end'>
                                     <div className='text-sm'>
-                                        <a href='/forgot-password' className='font-medium text-[#696969] hover:text-gray-800'>
+                                        <a href='/forgot-password' className='font-medium text-white hover:text-gray-300 transition duration-100'>
                                             Forgot Password?
                                         </a>
                                     </div>
                                 </div>
 
                                 <div>
-                                <ExplosionEffect className='w-full'>
-                                    <button
-                                        type='submit'
-                                        disabled={isLoading}
-                                        className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white bg-[#904805] hover:bg-orange-800 focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed'
+                                    <motion.div
+                                        whileHover={{ scale: 1.04 }}
+                                        transition={{ duration: 0.3 }}
+                                        className='w-full'
                                     >
-                                        {isLoading ? (
-                                            <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                                            </svg>
-                                        ) : 'Sign Up'}
-                                    </button>
-                                </ExplosionEffect>
+                                        <ExplosionEffect className='w-full'>
+                                            <button
+                                                type='submit'
+                                                disabled={isLoading}
+                                                className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed bg-gradient-to-r from-[#FFCD29] via-[#FAD859] to-[#FFCD29]'
+                                                style={{
+                                                    boxShadow: '0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3)',
+                                                }}
+                                            >
+                                                {isLoading ? (
+                                                    <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                                                    </svg>
+                                                ) : 'Log In'}
+                                            </button>
+                                        </ExplosionEffect>
+                                    </motion.div>
                                 </div>
                             </form>
             
-                            <div className='text-center text-sm'>
-                                <span className='text-base text-[#696969] font-segoe'>Already have an account?</span>{' '}
-                                <a href='/sign-in' className='text-base font-medium text-[#623408] hover:text-orange-900 font-segoe'>
-                                    Log in
+                            <div className='text-center text-sm mt-6'>
+                                <span className='text-base text-white font-segoe'>New to ZenShift?</span>{' '}
+                                <a href='/sign-up' className='text-base font-semibold text-red-500 hover:text-red-600 font-segoe transition duration-200'>
+                                    Create Account
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className='block md:hidden min-h-screen w-full bg-white bg-[length:100%_auto] sign-mobile-background bg-no-repeat bg-top'>
-                <div className='w-full h-full flex items-center justify-center pt-[400px] pb-20 px-4'>
-                    <div className='w-full max-w-md space-y-6'>
+            <div className='flex flex-col md:hidden min-h-screen w-full bg-white sign-mobile-background'>
+                <div className='flex flex-grow justify-center items-center p-6'>
+                    <div className='w-full max-w-md space-y-6 max-w-lg w-full'>
                         <div>
                             <h2 className='text-center text-[30px] md:text-[60px] font-playfair font-bold'>
-                                Create Account
+                                Log In
                             </h2>
                         </div>
-                        <div className='chakra-row flex justify-center gap-2'>
-                            <div className='chakra-circle purple w-8 h-8'></div>
-                            <div className='chakra-circle indigo w-8 h-8'></div>
-                            <div className='chakra-circle blue w-8 h-8'></div>
-                            <div className='chakra-circle green w-8 h-8'></div>
-                            <div className='chakra-circle yellow w-8 h-8'></div>
-                            <div className='chakra-circle orange w-8 h-8'></div>
+                        <div className='chakra-row space-x-1'>
                             <div className='chakra-circle red w-8 h-8'></div>
+                            <div className='chakra-circle orange w-8 h-8'></div>
+                            <div className='chakra-circle yellow w-8 h-8'></div>
+                            <div className='chakra-circle green w-8 h-8'></div>
+                            <div className='chakra-circle blue w-8 h-8'></div>
+                            <div className='chakra-circle indigo w-8 h-8'></div>
+                            <div className='chakra-circle purple w-8 h-8'></div>
                         </div>
-                        <div className='space-y-4'>
-                            <form className='space-y-4' onSubmit={handleSubmit}>
+                        <div className=''>
+                            <form className='space-y-4 mb-4' onSubmit={handleSubmit}>
                                 <div className='space-y-4'>
                                     <div>
-                                        <label htmlFor='mobile-firstName' className='block text-sm font-medium text-[#696969]'>
-                                            First Name:
-                                        </label>
-                                        <input
-                                            id='mobile-firstName'
-                                            name='mobile-firstName'
-                                            type='firstName'
-                                            autoComplete='firstName'
-                                            value={formState.name as string}
-                                            onChange={handleChange('name')}
-                                            required
-                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor='mobile-email' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='mobile-email' className='block text-sm font-medium text-[#000]'>
                                             Email:
                                         </label>
                                         <input
@@ -250,12 +230,12 @@ const SignUp = () => {
                                             value={formState.email as string}
                                             onChange={handleChange('email')}
                                             required
-                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                            className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                         />
                                         {formState.emailError && <div className='text-sm text-red-500 mt-1'>{formState.emailErrorMessage}</div>}
                                     </div>
                                     <div>
-                                        <label htmlFor='mobile-password' className='block text-sm font-medium text-[#696969]'>
+                                        <label htmlFor='mobile-password' className='block text-sm font-medium text-[#000]'>
                                             Password:
                                         </label>
                                         <div className='relative'>
@@ -267,7 +247,7 @@ const SignUp = () => {
                                                 value={formState.password as string}
                                                 onChange={handleChange('password')}
                                                 required
-                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-orange-800 focus:border-orange-800 sm:text-sm'
+                                                className='mt-1 appearance-none block w-full px-3 py-2 border-b border-[#696969] placeholder-gray-400 focus:outline-none focus:ring-[#FAD859] focus:border-[#FAD859] sm:text-sm'
                                             />
                                             <button
                                                 type='button'
@@ -292,56 +272,67 @@ const SignUp = () => {
 
                                 <div className='flex items-center justify-end'>
                                     <div className='text-sm'>
-                                        <a href='/forgot-password' className='font-medium text-[#696969] hover:text-gray-800'>
+                                        <a href='/forgot-password' className='font-medium text-[#000] hover:text-gray-800'>
                                             Forgot Password?
                                         </a>
                                     </div>
                                 </div>
 
                                 <div>
-                                <button
-                                        type='submit'
-                                        disabled={isLoading}
-                                        className='w-full flex justify-center py-3 px-4 rounded-lg border border-transparent text-base font-medium text-white bg-[#904805] hover:bg-orange-800 focus:outline-none transition duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed'
+                                    <motion.div
+                                        whileHover={{ scale: 1.03 }}
+                                        transition={{ duration: 0.3 }}
+                                        className='w-full'
                                     >
-                                        {isLoading ? (
-                                            <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                                            </svg>
-                                        ) : 'Sign Up'}
-                                    </button>
+                                        <ExplosionEffect className='w-full'>
+                                            <button
+                                                type='submit'
+                                                disabled={isLoading}
+                                                className='w-full flex justify-center py-2 px-4 rounded-lg border border-transparent text-base font-medium text-white focus:outline-none transition deration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed bg-gradient-to-r from-[#FFCD29] via-[#FAD859] to-[#FFCD29]'
+                                                style={{
+                                                    boxShadow: '0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3)',
+                                                }}
+                                            >
+                                                {isLoading ? (
+                                                    <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                                                    </svg>
+                                                ) : 'Log In'}
+                                            </button>
+                                            
+                                        </ExplosionEffect>
+                                    </motion.div>
                                 </div>
                             </form>
 
-                            <div className='relative flex justify-center text-sm'>
-                                <span className='px-2 text-gray-500'>-OR-</span>
+                            <div className='text-center text-sm'>
+                                <span className='text-sm text-white font-segoe'>New to Zenshift?</span>{' '}
+                                <a href='/sign-up' className='text-sm font-semibold text-red-500 hover:text-red-600 font-segoe transition duration-200'>
+                                    Create Account
+                                </a>
                             </div>
 
-                            <div className='grid grid-cols-2 gap-3'>
+                            <div className='space-y-2 mt-8 w-full flex flex-col items-center'>
                                 <button
                                     type='button'
-                                    className='w-full flex justify-center items-center py-2 px-4 border border-[#696969] rounded-lg text-sm font-medium text-[#696969] hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
+                                    className='w-[240px] flex justify-center items-center py-2 px-4 border border-white rounded-lg text-sm font-medium text-white hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
                                     onClick={handleGoogleLogin}
                                 >
                                     <GoogleIcon />
-                                    <span className='ml-1'>Sign up with Google</span>
+                                    <span className='ml-1 text-white'>Sign in with Google</span>
                                 </button>
+                                <div className='relative flex justify-center text-sm'>
+                                    <span className='px-2 text-black'>-OR-</span>
+                                </div>
                                 <button
                                     type='button'
-                                    className='w-full flex justify-center items-center py-2 px-4 border border-[#696969] rounded-lg text-sm font-medium text-[#696969] hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
+                                    className='w-[240px] flex justify-center items-center py-2 px-4 border border-white rounded-lg text-sm font-medium text-white hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 cursor-pointer'
                                     onClick={handleFacebookLogin}
                                 >
                                     <FacebookIcon />
-                                    <span className='ml-1'>Sign up with Facebook</span>
+                                    <span className='ml-1 text-white'>Sign in with Facebook</span>
                                 </button>
-                            </div>
-            
-                            <div className='text-center text-sm'>
-                                <span className='text-base text-[#696969]'>Already have an account?</span>{' '}
-                                <a href='/sign-in' className='text-base font-medium text-[#623408] hover:text-orange-900'>
-                                    Log in
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -351,4 +342,4 @@ const SignUp = () => {
     );
 }
 
-export default SignUp;
+export default SignIn;

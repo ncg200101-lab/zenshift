@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FullWidthButton, ThanksButton } from '../components/ui/Buttons';
 import { useAppDispatch } from '../state/hooks';
@@ -8,16 +8,66 @@ import SocialIcons from '../components/ui/SocialIcons';
 import { getProductByIdAction } from '../state/product/actions';
 import { ProductTypes } from '../state/product/types';
 import SpinLoader from '../components/ui/SpinLoader';
+import { downloadPDF, getPDFFilename, getPDFUrl } from '../utils/downloadUtils';
 
 const Thanks = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+    const [isDownloading, setIsDownloading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [currectProduct, setCurrentProduct] = useState<ProductTypes | undefined>();
+    const [paymentSuccessful, setPaymentSuccessful] = useState<boolean>(false);
+
+    // Check if payment was successful from URL parameters
+    const sessionId = searchParams.get('session_id');
+    const isDigitalProduct = currectProduct?.additionalDetails?.shippingFormat === 'Digital Product';
+
+    const handleDownload = useCallback(async () => {
+        if (!currectProduct) return;
+
+        if (!currectProduct?.bookPath) {
+            alert("No digital product available for download.");
+            return;
+        }
+
+        try {
+            setIsDownloading(true);
+
+            const response = await fetch(`${currectProduct.bookPath}`, {
+                method: "GET",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to download file.");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+
+            // Get filename from path or product name
+            const fileName =
+                currectProduct.bookPath.split("/").pop() ||
+                `${currectProduct.name}.pdf`;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+            alert("There was an error downloading your file. Please try again.");
+        } finally {
+            setIsDownloading(false);
+        }
+    }, [currectProduct]);
 
     const handleClick = useCallback((link?: string) => () => {
         if (link) {
@@ -38,7 +88,7 @@ const Thanks = () => {
             setIsSubmitLoading(true);
             console.log('Submitting data:', email);
             await new Promise(resolve => setTimeout(resolve, 1000));
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         } finally {
             setIsSubmitLoading(false);
@@ -52,7 +102,7 @@ const Thanks = () => {
                 try {
                     const product = await dispatch(getProductByIdAction(id)).unwrap();
                     setCurrentProduct(product);
-                } catch(e) {
+                } catch (e) {
                     console.error(e);
                 } finally {
                     setIsLoading(false);
@@ -60,7 +110,12 @@ const Thanks = () => {
             }
         };
         fetchProduct();
-    }, [dispatch, id]);
+
+        // Set payment successful if session_id is present (indicating successful Stripe payment)
+        if (sessionId) {
+            setPaymentSuccessful(true);
+        }
+    }, [dispatch, id, sessionId]);
 
     if (isLoading) {
         return (
@@ -88,15 +143,76 @@ const Thanks = () => {
                     className='mb-8 md:mb-16'
                 >
                     <MainTitle>
-                        Thank You, Your Frequency Shift is on its Way
+                        {isDigitalProduct && paymentSuccessful
+                            ? 'Thank You! Your Digital Product is Ready'
+                            : 'Thank You, Your Frequency Shift is on its Way'
+                        }
                     </MainTitle>
                 </motion.div>
                 <Text>
-                    We've received your order and you'll get an email confirmation shortly. Until then, breathe it in—you just said yes to something aligned.
+                    {isDigitalProduct && paymentSuccessful
+                        ? 'Your payment has been processed successfully! Your digital product is ready for download below. You\'ll also receive an email confirmation shortly.'
+                        : 'We\'ve received your order and you\'ll get an email confirmation shortly. Until then, breathe it in—you just said yes to something aligned.'
+                    }
                     <br />
                     <i>We don't take that lightly. Your field just shifted—and we're honored to be part of it.</i>
                 </Text>
             </div>
+
+            {/* Digital Product Download Section */}
+            {isDigitalProduct && paymentSuccessful && (
+                <div className='container py-6 md:py-12'>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className='bg-green-50 border border-green-200 rounded-xl p-6 max-w-2xl mx-auto'
+                    >
+                        <div className='text-center mb-6'>
+                            <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                                <svg className='w-8 h-8 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                                    <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
+                                </svg>
+                            </div>
+                            <h3 className='text-xl font-semibold text-green-800 mb-2'>Payment Successful!</h3>
+                            <p className='text-green-700'>Your digital product is ready for download</p>
+                        </div>
+
+                        <div className='bg-white rounded-lg p-4 mb-6'>
+                            <div className='flex items-center space-x-4'>
+                                <img
+                                    src={currectProduct?.image}
+                                    alt={currectProduct?.name || ''}
+                                    className='w-16 h-16 object-contain rounded-lg'
+                                />
+                                <div className='flex-1'>
+                                    <h4 className='font-semibold text-gray-900'>{currectProduct?.name}</h4>
+                                    <p className='text-sm text-gray-600'>Digital Product</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <FullWidthButton
+                                onClick={handleDownload}
+                                disabled={isDownloading}
+                                className='w-full'
+                            >
+                                {isDownloading ? 'Downloading...' : 'Download Now'}
+                            </FullWidthButton>
+                        </motion.div>
+
+                        <p className='text-sm text-green-600 mt-4 text-center'>
+                            💡 You can download this product anytime from your account
+                        </p>
+                    </motion.div>
+                </div>
+            )}
+
             <div className='w-full h-[3px] bg-white'></div>
             <div className='container py-6 md:py-12'>
                 <SubTitle className='mb-12'>
@@ -159,10 +275,10 @@ const Thanks = () => {
                     <form className='flex flex-col gap-6' onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor='email' className='sr-only'>Email Address</label>
-                            <input 
-                                type='email' 
-                                id='email' 
-                                name='email' 
+                            <input
+                                type='email'
+                                id='email'
+                                name='email'
                                 placeholder='Email'
                                 required
                                 value={email}
@@ -192,7 +308,7 @@ const Thanks = () => {
                 </div>
                 <div className='bg-[#E8E0C7] py-2 px-4'>
                     <h1 className='font-playfair text-[#362925] text-4xl md:text-6xl tracking-normal'>
-                        ' You Are Part of Something bigger. Zenshift is a return, not a trend
+                        ' You Are Part of Something bigger. ZenShift is a return, not a trend
                     </h1>
                     <p className='font-lato text-xl my-1 md:my-2'>
                         <i>This is a return to alignment. You are right on time.</i>
